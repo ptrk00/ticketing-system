@@ -8,3 +8,15 @@ ORDER BY coordinates <-> ST_GeogFromText('POINT(-73.985428 40.748817)')
 LIMIT 1;
 
 SELECT name FROM location WHERE name LIKE '%place%';
+
+select "user".name as client_name, event.name as event_name from ticket inner join event_artist on ticket.event_id=event_artist.event_id inner join "user" on ticket.owner_id="user".id inner join event on ticket.event_id=event.id where ticket.owner_id = 1;
+
+select 
+    "user".name as client_name, 
+    event.name as event_name,
+    artist.name as artist_name 
+from ticket 
+    inner join event_artist on ticket.event_id=event_artist.event_id 
+    inner join "user" on ticket.owner_id="user".id 
+    inner join event on ticket.event_id=event.id 
+    inner join artist on artist.id=event_artist.artist_id where ticket.owner_id = 1;

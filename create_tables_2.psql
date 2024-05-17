@@ -2,13 +2,15 @@ CREATE TABLE IF NOT EXISTS "ticket" (
     "id"        BIGINT NOT NULL PRIMARY KEY,
     "owner_id"  BIGINT NOT NULL,
     "event_id"  BIGINT NOT NULL,
-    "payed"     BIGINT NOT NULL CHECK(payed > 0) 
+    "price"     NUMERIC(12,2) CHECK(price > 0),
+    "currency"  VARCHAR(3) CHECK (currency IN ('PLN', 'USD', 'EUR', 'GBP'))  
 );
 
 CREATE TABLE IF NOT EXISTS "event_artist" (
-    "id"        BIGINT NOT NULL PRIMARY KEY,
+    -- "id"        BIGINT NOT NULL PRIMARY KEY,
     "event_id"  BIGINT NOT NULL,
-    "artist_id" BIGINT NOT NULL
+    "artist_id" BIGINT NOT NULL,
+    PRIMARY KEY ("event_id", "artist_id")
 );
 
 CREATE TABLE IF NOT EXISTS "artist" (

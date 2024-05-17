@@ -12,3 +12,32 @@ INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_
 (3, 'Food Festival', '2024-08-20', '2024-08-22', 200, 3),
 (4, 'Art Exhibition', '2024-09-10', '2024-09-12', 250, 4),
 (5, 'Book Fair', '2024-10-05', '2024-10-07', 300, 5);
+
+
+INSERT INTO "user" (id, name, email, birthdate) VALUES
+(1, 'Alice Smith', 'alice.smith@example.com', '1990-01-15'),
+(2, 'Bob Johnson', 'bob.johnson@example.com', '1985-05-23'),
+(3, 'Charlie Brown', 'charlie.brown@example.com', '1992-08-12'),
+(4, 'Diana Prince', 'diana.prince@example.com', '1988-11-03'),
+(5, 'Evan Davis', 'evan.davis@example.com', '1995-04-28');
+
+INSERT INTO "artist" (id, name) VALUES
+(1, 'Vincent van Gogh'),
+(2, 'Pablo Picasso'),
+(3, 'Leonardo da Vinci'),
+(4, 'Claude Monet'),
+(5, 'Frida Kahlo');
+
+INSERT INTO "event_artist" (id, event_id, artist_id) VALUES
+(1, 5, 1), -- Example: Vincent van Gogh at Event 101
+(2, 4, 2), -- Example: Pablo Picasso at Event 102
+(3, 3, 3), -- Example: Leonardo da Vinci at Event 103
+(4, 2, 4), -- Example: Claude Monet at Event 104
+(5, 1, 5); -- Example: Frida Kahlo at Event 105
+
+INSERT INTO "ticket" (id, owner_id, event_id, price, currency) VALUES
+(1, 1, 5, 50.00, 'USD'), -- Owner 1, Event 101, Price 50.00 USD
+(2, 2, 4, 75.00, 'EUR'), -- Owner 2, Event 102, Price 75.00 EUR
+(3, 3, 3, 100.00, 'GBP'), -- Owner 3, Event 103, Price 100.00 GBP
+(4, 4, 2, 120.00, 'PLN'), -- Owner 4, Event 104, Price 120.00 PLN
+(5, 5, 1, 60.00, 'USD'); -- Owner 5, Event 105, Price 60.00 USD
