@@ -33,10 +33,9 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 
 CREATE TABLE IF NOT EXISTS "location" (
-    "id"        BIGINT NOT NULL PRIMARY KEY,
-    "seats"     BIGINT NOT NULL CHECK(seats > 0),
-    "long"      BIGINT NOT NULL,
-    "lat"       BIGINT NOT NULL
+    "id"          BIGINT NOT NULL PRIMARY KEY,
+    "seats"       BIGINT NOT NULL CHECK(seats > 0),
+    "coordinates" GEOGRAPHY(Point, 4326)
 );
 
 

@@ -11,4 +11,8 @@ resetdb:
 	docker compose down -v && docker compose up -d && sleep 5
 
 .PHONY: remigrate
-remigrate: resetdb migrate pg
+remigrate: resetdb migrate loaddummydata
+
+.PHONY: loaddummydata
+loaddummydata:
+	PGPASSWORD=postgres psql -h localhost -U postgres -d mydb -a -f dummy_data.psql
