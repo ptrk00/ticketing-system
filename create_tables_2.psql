@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 CREATE TABLE IF NOT EXISTS "location" (
     "id"          BIGINT NOT NULL PRIMARY KEY,
+    "name"        VARCHAR(255) NOT NULL CHECK(LENGTH(TRIM(name)) >= 1),
     "seats"       BIGINT NOT NULL CHECK(seats > 0),
     "coordinates" GEOGRAPHY(Point, 4326)
 );
