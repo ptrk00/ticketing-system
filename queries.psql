@@ -20,3 +20,21 @@ from ticket
     inner join "user" on ticket.owner_id="user".id 
     inner join event on ticket.event_id=event.id 
     inner join artist on artist.id=event_artist.artist_id where ticket.owner_id = 1;
+
+
+select 
+    event.name as event_name, 
+    artist.name as artist_name 
+from event 
+    inner join event_artist on event.id = event_artist.event_id 
+    inner join artist on artist.id = event_artist.artist_id 
+    where ts @@ to_tsquery('english', 'art');
+
+select 
+    event.name as event_name, 
+    artist.name as artist_name, 
+    ts_rank(ts, to_tsquery('english', 'music')) 
+from event 
+    inner join event_artist on event.id = event_artist.event_id 
+    inner join artist on artist.id = event_artist.artist_id 
+    order by ts_rank(ts, to_tsquery('english', 'music')) DESC;

@@ -6,12 +6,13 @@ INSERT INTO "location" ("id", "name", "seats", "coordinates") VALUES
 (5, 'fifth place', 300, ST_GeogFromText('POINT(-79.935242 20.730610)'));
 
 
-INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_id") VALUES
-(1, 'Music Concert', '2024-06-01', '2024-06-01', 100, 1),
-(2, 'Tech Conference', '2024-07-15', '2024-07-17', 150, 2),
-(3, 'Food Festival', '2024-08-20', '2024-08-22', 200, 3),
-(4, 'Art Exhibition', '2024-09-10', '2024-09-12', 250, 4),
-(5, 'Book Fair', '2024-10-05', '2024-10-07', 300, 5);
+INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_id", "description") VALUES
+(1, 'Music Concert', '2024-06-01', '2024-06-01', 100, 1, 'A grand music concert featuring famous bands.'),
+(2, 'Tech Conference', '2024-07-15', '2024-07-17', 150, 2, 'Annual tech conference with keynotes and workshops.'),
+(3, 'Food Festival', '2024-08-20', '2024-08-22', 200, 3, 'A festival showcasing gourmet food from around the world and musical.'),
+(4, 'Art Exhibition', '2024-09-10', '2024-09-12', 250, 4, 'Exhibition of modern and contemporary art pieces.'),
+(5, 'Book Fair', '2024-10-05', '2024-10-07', 300, 5, 'A fair where you can find books from various genres and authors.');
+
 
 
 INSERT INTO "user" (id, name, email, birthdate) VALUES
@@ -28,12 +29,12 @@ INSERT INTO "artist" (id, name) VALUES
 (4, 'Claude Monet'),
 (5, 'Frida Kahlo');
 
-INSERT INTO "event_artist" (id, event_id, artist_id) VALUES
-(1, 5, 1), -- Example: Vincent van Gogh at Event 101
-(2, 4, 2), -- Example: Pablo Picasso at Event 102
-(3, 3, 3), -- Example: Leonardo da Vinci at Event 103
-(4, 2, 4), -- Example: Claude Monet at Event 104
-(5, 1, 5); -- Example: Frida Kahlo at Event 105
+INSERT INTO "event_artist" (event_id, artist_id) VALUES
+(5, 1), -- Example: Vincent van Gogh at Event 101
+(4, 2), -- Example: Pablo Picasso at Event 102
+(3, 3), -- Example: Leonardo da Vinci at Event 103
+(2, 4), -- Example: Claude Monet at Event 104
+(1, 5); -- Example: Frida Kahlo at Event 105
 
 INSERT INTO "ticket" (id, owner_id, event_id, price, currency) VALUES
 (1, 1, 5, 50.00, 'USD'), -- Owner 1, Event 101, Price 50.00 USD

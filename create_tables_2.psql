@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS "artist" (
 CREATE TABLE IF NOT EXISTS "event" (
     "id"            BIGINT NOT NULL PRIMARY KEY,
     "name"          VARCHAR(255) NOT NULL CHECK(LENGTH(TRIM(name)) >= 3),
+    "description"   VARCHAR(255), 
     "start_date"    DATE NOT NULL,
     "end_date"      DATE NOT NULL,
     "seats"         BIGINT NOT NULL CHECK(seats > 0), 
@@ -77,6 +78,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_event_seats BEFORE INSERT ON "event" FOR EACH ROW EXECUTE FUNCTION check_event_seats_less_than_location_seats();
 
-
+ALTER TABLE "event" ADD COLUMN ts tsvector
+    GENERATED ALWAYS AS (to_tsvector('english', description)) STORED;
 
 
