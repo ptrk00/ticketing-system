@@ -1,23 +1,10 @@
-from fastapi import FastAPI, Depends, Query
+from fastapi import APIRouter, Depends, Query
+from database.db import get_db
 import asyncpg
-import os
 
-app = FastAPI()
+router = APIRouter()
 
-DATABASE_URL=os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mydb")
-
-@app.on_event("startup")
-async def startup():
-    app.state.db: asyncpg.Pool = await asyncpg.create_pool(DATABASE_URL)
-
-@app.on_event("shutdown")
-async def shutdown():
-    await app.state.db.close()
-
-async def get_db() -> asyncpg.Pool:
-    return app.state.db
-
-@app.get("/events")
+@router.get("/")
 async def list_events(db: asyncpg.Pool = Depends(get_db), 
                         limit: int = Query(3, ge=1),
                         offset: int = Query(0, ge=0)):
@@ -39,7 +26,7 @@ async def list_events(db: asyncpg.Pool = Depends(get_db),
         )
         return [dict(event) for event in events]
 
-@app.get("/events/{event_id}")
+@router.get("/{event_id}")
 async def get_events( event_id: int, db: asyncpg.Pool = Depends(get_db)):
     async with db.acquire() as connection:
         events = await connection.fetch(
@@ -58,7 +45,3 @@ async def get_events( event_id: int, db: asyncpg.Pool = Depends(get_db)):
             """, event_id
         )
         return [dict(event) for event in events]
-
-@app.get("/health")
-async def root():
-    return {"app": "helathy"}
