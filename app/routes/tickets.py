@@ -45,3 +45,20 @@ async def get_ticket(ticket_id: int, db: asyncpg.Pool = Depends(get_db)):
             """, ticket_id
         )
         return [dict(ticket) for ticket in tickets]
+
+@router.post("/checkout")
+async def buy_ticket(user_id: int, 
+                     event_id: int,
+                     price: float,
+                     currency: str = Query("PLN", len=3),
+                    db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        tickets = await connection.execute(
+            """
+            INSERT INTO ticket 
+                (owner_id, event_id, price, currency)
+            VALUES ($1, $2, $3, $4)
+            """, user_id, event_id, price, currency
+        )
+        print(tickets)
+        return
