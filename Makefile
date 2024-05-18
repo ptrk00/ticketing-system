@@ -16,3 +16,7 @@ remigrate: resetdb migrate loaddummydata
 .PHONY: loaddummydata
 loaddummydata:
 	PGPASSWORD=postgres psql -h localhost -U postgres -d mydb -a -f dummy_data.psql
+
+.PHONY: devserver
+devserver:
+	fastapi dev main.py
