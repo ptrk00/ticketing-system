@@ -101,6 +101,7 @@ AFTER INSERT ON "ticket"
 FOR EACH ROW
 EXECUTE FUNCTION decrement_seats();
 
+-- load test data
 INSERT INTO "location" ("id", "name", "seats", "coordinates") VALUES
 (1, 'first place', 100, ST_GeogFromText('POINT(-70.935242 90.730610)')),
 (2, 'second place', 150, ST_GeogFromText('POINT(-76.935242 46.730610)')),
