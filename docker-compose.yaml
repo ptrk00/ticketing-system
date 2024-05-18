@@ -17,6 +17,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    profiles: [deps, all]
   app:
     build:
       context: .
@@ -29,7 +30,7 @@ services:
       postgres:
         condition: service_healthy
     restart: always
-
+    profiles: [all]
 volumes:
   db:
     driver: local
