@@ -129,6 +129,26 @@ async def search_nearest_events(long: float = Query(),
         )
         return [dict(event) for event in events]
 
+@router.get("/{event_id}/artist")
+async def get_events_artist( event_id: int, db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        events = await connection.fetch(
+            """
+            SELECT 
+                event.id, 
+                event.name, 
+                array_agg(artist.name) as "artists" 
+            FROM "event" 
+                INNER JOIN location ON event.location_id = location.id 
+                INNER JOIN event_artist ON event_artist.event_id=event.id
+                INNER JOIN artist ON event_artist.artist_id=artist.id
+            WHERE event.id = $1
+            GROUP BY event.id, event.name
+            """, event_id
+        )
+        return [dict(event) for event in events]
+
+
 @router.get("/{event_id}")
 async def get_events( event_id: int, db: asyncpg.Pool = Depends(get_db)):
     async with db.acquire() as connection:

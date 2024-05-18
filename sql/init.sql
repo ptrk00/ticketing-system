@@ -136,7 +136,8 @@ INSERT INTO "event_artist" (event_id, artist_id) VALUES
 (4, 2), -- Example: Pablo Picasso at Event 102
 (3, 3), -- Example: Leonardo da Vinci at Event 103
 (2, 4), -- Example: Claude Monet at Event 104
-(1, 5); -- Example: Frida Kahlo at Event 105
+(1, 5), -- Example: Frida Kahlo at Event 105
+(2, 1);
 
 INSERT INTO "ticket" (id, owner_id, event_id, price, currency) VALUES
 (1, 1, 5, 50.00, 'USD'), -- Owner 1, Event 101, Price 50.00 USD
