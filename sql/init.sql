@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "ticket" (
-    "id"        BIGINT NOT NULL PRIMARY KEY,
+    "id"        BIGSERIAL NOT NULL PRIMARY KEY,
     "owner_id"  BIGINT NOT NULL,
     "event_id"  BIGINT NOT NULL,
     "price"     NUMERIC(12,2) CHECK(price > 0),
@@ -146,4 +146,6 @@ INSERT INTO "ticket" (id, owner_id, event_id, price, currency) VALUES
 (4, 4, 2, 120.00, 'PLN'), -- Owner 4, Event 104, Price 120.00 PLN
 (5, 5, 1, 60.00, 'USD'), -- Owner 5, Event 105, Price 60.00 USD
 (6, 3, 1, 90.00, 'GBP'),
-(7, 3, 6, 190.00, 'GBP')
+(7, 3, 6, 190.00, 'GBP');
+
+SELECT setval(pg_get_serial_sequence('"ticket"', 'id'), MAX(id)) FROM "ticket";
