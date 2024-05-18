@@ -114,7 +114,9 @@ INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_
 (2, 'Tech Conference', '2024-07-15', '2024-07-17', 150, 2, 'Annual tech conference with keynotes and workshops.'),
 (3, 'Food Festival', '2024-08-20', '2024-08-22', 200, 3, 'A festival showcasing gourmet food from around the world and musical.'),
 (4, 'Art Exhibition', '2024-09-10', '2024-09-12', 250, 4, 'Exhibition of modern and contemporary art pieces.'),
-(5, 'Book Fair', '2024-10-05', '2024-10-07', 300, 5, 'A fair where you can find books from various genres and authors.');
+(5, 'Book Fair', '2024-10-05', '2024-10-07', 300, 5, 'A fair where you can find books from various genres and authors.'),
+(6, 'Book Fair Super Exclusive', '2024-10-05', '2024-10-07', 300, 3, 'A fair where you can find super exclusive books from various genres and authors.')
+;
 
 INSERT INTO "user" (id, name, email, birthdate) VALUES
 (1, 'Alice Smith', 'alice.smith@example.com', '1990-01-15'),
@@ -142,5 +144,6 @@ INSERT INTO "ticket" (id, owner_id, event_id, price, currency) VALUES
 (2, 2, 4, 75.00, 'EUR'), -- Owner 2, Event 102, Price 75.00 EUR
 (3, 3, 3, 100.00, 'GBP'), -- Owner 3, Event 103, Price 100.00 GBP
 (4, 4, 2, 120.00, 'PLN'), -- Owner 4, Event 104, Price 120.00 PLN
-(5, 5, 1, 60.00, 'USD'); -- Owner 5, Event 105, Price 60.00 USD
-
+(5, 5, 1, 60.00, 'USD'), -- Owner 5, Event 105, Price 60.00 USD
+(6, 3, 1, 90.00, 'GBP'),
+(7, 3, 6, 190.00, 'GBP')
