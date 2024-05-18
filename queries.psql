@@ -25,6 +25,7 @@ from ticket
     inner join artist on artist.id=event_artist.artist_id where ticket.owner_id = 1;
 
 
+-- done
 select 
     event.name as event_name, 
     artist.name as artist_name 
@@ -32,6 +33,7 @@ from event
     inner join event_artist on event.id = event_artist.event_id 
     inner join artist on artist.id = event_artist.artist_id 
     where ts @@ to_tsquery('english', 'art');
+
 
 select 
     event.name as event_name, 

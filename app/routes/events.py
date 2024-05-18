@@ -59,6 +59,37 @@ async def search_for_events(q: str = Query(min_length=1),
         )
         return [dict(event) for event in events]
 
+@router.get("/search/description")
+async def search_for_events_by_description(q: str = Query(min_length=1), 
+                            db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        events = await connection.fetch(
+            """
+         SELECT 
+            event.name as event_name, 
+            event.description
+         FROM event 
+            WHERE ts @@ to_tsquery('english', $1);
+            """, q
+        )
+        return [dict(event) for event in events]
+
+@router.get("/search/description/all")
+async def search_for_events_by_descriptio_full_rankn(q: str = Query(min_length=1), 
+                            db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        events = await connection.fetch(
+            """
+         SELECT 
+            event.name as event_name, 
+            event.description,
+            ts_rank(ts, to_tsquery('english', $1)) 
+        FROM event 
+            ORDER BY ts_rank(ts, to_tsquery('english', $1)) DESC;
+            """, q
+        )
+        return [dict(event) for event in events]
+
 @router.get("/range")
 async def search_events_in_range(range: int = Query(gt=1),
                             long: float = Query(),
