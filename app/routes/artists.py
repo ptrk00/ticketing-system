@@ -26,10 +26,13 @@ async def get_artists( artist_id: int, db: asyncpg.Pool = Depends(get_db)):
         artists = await connection.fetch(
             """
             SELECT 
-                artist.id, 
-                artist.name
+                artist.name as artist_name,
+                array_agg(event.name) as event_name
             FROM "artist" 
+                INNER JOIN event_artist ON event_artist.artist_id=artist.id
+                INNER JOIN event ON event_artist.event_id=event.id
             WHERE artist.id = $1
+            GROUP BY artist.name
             """, artist_id
         )
         return [dict(artist) for artist in artists]
