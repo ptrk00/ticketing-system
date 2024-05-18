@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS "ticket" (
 );
 
 CREATE TABLE IF NOT EXISTS "event_artist" (
-    -- "id"        BIGINT NOT NULL PRIMARY KEY,
     "event_id"  BIGINT NOT NULL,
     "artist_id" BIGINT NOT NULL,
     PRIMARY KEY ("event_id", "artist_id")
@@ -66,8 +65,8 @@ DECLARE
     max_seats BIGINT;
 BEGIN
     SELECT seats INTO max_seats FROM "location" WHERE id=NEW.id;
-    RAISE NOTICE 'max_seats is currently %', max_seats;
-    RAISE NOTICE 'seats is currently %', NEW.seats;
+    -- RAISE NOTICE 'max_seats is currently %', max_seats;
+    -- RAISE NOTICE 'seats is currently %', NEW.seats;
     IF NEW.seats > max_seats THEN
         RAISE EXCEPTION 'not enough seats';
     END IF;
@@ -81,4 +80,23 @@ CREATE TRIGGER check_event_seats BEFORE INSERT ON "event" FOR EACH ROW EXECUTE F
 ALTER TABLE "event" ADD COLUMN ts tsvector
     GENERATED ALWAYS AS (to_tsvector('english', description)) STORED;
 
+CREATE OR REPLACE FUNCTION decrement_seats() RETURNS TRIGGER AS $$
+BEGIN
+  -- Decrement the seats in the event table where event_id matches
+  UPDATE "event"
+  SET seats = seats - 1
+  WHERE id = NEW.event_id AND seats > 0;
 
+  -- Ensure that the seats were decremented
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'No seats available for event_id %', NEW.event_id;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_decrement_seats
+AFTER INSERT ON "ticket"
+FOR EACH ROW
+EXECUTE FUNCTION decrement_seats();
