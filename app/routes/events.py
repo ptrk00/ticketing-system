@@ -26,6 +26,39 @@ async def list_events(db: asyncpg.Pool = Depends(get_db),
         )
         return [dict(event) for event in events]
 
+@router.get("/bestsellers")
+async def get_best_selling_events(db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        events = await connection.fetch(
+            """
+            SELECT 
+                event.name,
+                COUNT(ticket.id) as tickets_sold
+            FROM "ticket" 
+                INNER JOIN event ON ticket.event_id = event.id 
+                INNER JOIN location ON event.location_id = location.id
+            GROUP BY event.name
+            ORDER BY tickets_sold DESC
+            LIMIT 3
+            """
+        )
+        return [dict(event) for event in events]
+
+@router.get("/search")
+async def search_for_events(q: str = Query(min_length=1), 
+                            db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        events = await connection.fetch(
+            """
+             SELECT 
+                event.id,
+                event.name 
+             FROM "event" 
+                WHERE event.name ILIKE $1
+            """, f"%{q}%"
+        )
+        return [dict(event) for event in events]
+
 @router.get("/{event_id}")
 async def get_events( event_id: int, db: asyncpg.Pool = Depends(get_db)):
     async with db.acquire() as connection:
