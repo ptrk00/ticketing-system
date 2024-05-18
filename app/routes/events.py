@@ -59,6 +59,45 @@ async def search_for_events(q: str = Query(min_length=1),
         )
         return [dict(event) for event in events]
 
+@router.get("/range")
+async def search_events_in_range(range: int = Query(gt=1),
+                            long: float = Query(),
+                            lat: float = Query(),
+                            db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        events = await connection.fetch(
+            """
+             SELECT 
+                event.id,
+                event.name as event_name,
+                location.name as location_name,
+                ST_Distance(coordinates, ST_GeogFromText($1)) AS distance
+             FROM "event"
+                INNER JOIN location on event.location_id=location.id 
+                WHERE ST_DWithin(location.coordinates, ST_GeogFromText($2), $3);
+            """, f'POINT({long} {lat})', f'POINT({long} {lat})', range
+        )
+        return [dict(event) for event in events]
+
+@router.get("/nearest")
+async def search_nearest_events(long: float = Query(),
+                            lat: float = Query(),
+                            db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        events = await connection.fetch(
+            """
+             SELECT 
+                event.id as event_id,
+                event.name as event_name,
+                location.name as location_name,
+                ST_Distance(coordinates, ST_GeogFromText($1)) AS distance
+             FROM "event"
+                INNER JOIN location on event.location_id=location.id 
+                ORDER BY location.coordinates <-> ST_GeogFromText($2)
+            """, f'POINT({long} {lat})', f'POINT({long} {lat})'
+        )
+        return [dict(event) for event in events]
+
 @router.get("/{event_id}")
 async def get_events( event_id: int, db: asyncpg.Pool = Depends(get_db)):
     async with db.acquire() as connection:

@@ -115,8 +115,7 @@ INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_
 (3, 'Food Festival', '2024-08-20', '2024-08-22', 200, 3, 'A festival showcasing gourmet food from around the world and musical.'),
 (4, 'Art Exhibition', '2024-09-10', '2024-09-12', 250, 4, 'Exhibition of modern and contemporary art pieces.'),
 (5, 'Book Fair', '2024-10-05', '2024-10-07', 300, 5, 'A fair where you can find books from various genres and authors.'),
-(6, 'Book Fair Super Exclusive', '2024-10-05', '2024-10-07', 300, 3, 'A fair where you can find super exclusive books from various genres and authors.')
-;
+(6, 'Book Fair Super Exclusive', '2024-10-05', '2024-10-07', 300, 3, 'A fair where you can find super exclusive books from various genres and authors.');
 
 INSERT INTO "user" (id, name, email, birthdate) VALUES
 (1, 'Alice Smith', 'alice.smith@example.com', '1990-01-15'),

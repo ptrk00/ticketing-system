@@ -1,8 +1,9 @@
-
+-- done
 SELECT id, ST_Distance(coordinates, ST_GeogFromText('POINT(-73.985428 40.748817)')) AS distance
 FROM location
 WHERE ST_DWithin(coordinates, ST_GeogFromText('POINT(-73.985428 40.748817)'), 5000); -- 5000 meters range
 
+-- done
 SELECT id, ST_Distance(coordinates, ST_GeogFromText('POINT(-73.985428 40.748817)')) AS distance
 FROM location
 ORDER BY coordinates <-> ST_GeogFromText('POINT(-73.985428 40.748817)')
