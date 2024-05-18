@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "artist" (
 );
 
 CREATE TABLE IF NOT EXISTS "event" (
-    "id"            BIGINT NOT NULL PRIMARY KEY,
+    "id"            BIGSERIAL NOT NULL PRIMARY KEY,
     "name"          VARCHAR(255) NOT NULL CHECK(LENGTH(TRIM(name)) >= 3),
     "description"   VARCHAR(255), 
     "start_date"    DATE NOT NULL,
@@ -149,3 +149,4 @@ INSERT INTO "ticket" (id, owner_id, event_id, price, currency) VALUES
 (7, 3, 6, 190.00, 'GBP');
 
 SELECT setval(pg_get_serial_sequence('"ticket"', 'id'), MAX(id)) FROM "ticket";
+SELECT setval(pg_get_serial_sequence('"event"', 'id'), MAX(id)) FROM "event";

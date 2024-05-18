@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Query
 from database.db import get_db
 import asyncpg
+from pydantic import BaseModel
+import datetime
 
 router = APIRouter()
 
@@ -168,3 +170,36 @@ async def get_events( event_id: int, db: asyncpg.Pool = Depends(get_db)):
             """, event_id
         )
         return [dict(event) for event in events]
+
+class CreateEventPayload(BaseModel):
+    name: str
+    description: str
+    start_date: datetime.date
+    end_date: datetime.date
+    seats: int
+    location_id: int
+    actors_ids: list[int]
+
+@router.post("/event")
+async def create_events(payload: CreateEventPayload, db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        async with connection.transaction():
+            event_id = await connection.fetchval(
+            """
+                INSERT INTO "event" (name, description, start_date, end_date, seats, location_id)
+                VALUES ($1, $2, $3, $4, $5, $6)
+                RETURNING id
+            """,
+            payload.name, payload.description, payload.start_date, payload.end_date, payload.seats, payload.location_id
+            )
+
+            for actor_id in payload.actors_ids:
+                await connection.execute(
+                """
+                    INSERT INTO "event_artist" (event_id, artist_id)
+                    VALUES ($1, $2)
+                """, event_id, actor_id
+        
+            )
+
+        return
