@@ -74,3 +74,34 @@ WITH NO DATA;
 REFRESH MATERIALIZED VIEW soon_sold_out_events;
 
 SELECT * FROM soon_sold_out_events;
+
+
+CREATE OR REPLACE FUNCTION add_event(aname varchar(255), adescription varchar(255), agenre varchar(10), 
+    astart_date date, aend_date date, aseats bigint, alocation_id bigint, VARIADIC aartists BIGINT[]) RETURNS void
+AS $$
+DECLARE
+    event_id bigint;
+    aartist bigint;
+BEGIN
+    INSERT INTO event(name, description, genre, start_date, end_date, seats, location_id) VALUES (
+        aname, adescription, agenre, astart_date, aend_date, aseats, alocation_id
+    ) RETURNING id into event_id;
+
+    FOREACH aartist IN ARRAY aartists
+    LOOP
+        INSERT INTO event_artist(event_id,artist_id) VALUES(event_id, aartist);
+    END LOOP;
+END;
+$$LANGUAGE plpgsql;
+
+-- 
+SELECT add_event(
+    'Concert Night',        -- aname
+    'A great music event',  -- adescription
+    'sport',                -- agenre
+    '2024-06-15',           -- astart_date
+    '2024-06-16',           -- aend_date
+    100,                    -- aseats
+    1,                      -- alocation_id
+    1, 2, 3                 -- variadic artist IDs
+);

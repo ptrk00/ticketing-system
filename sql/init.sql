@@ -58,8 +58,15 @@ ALTER TABLE
 
 ALTER TABLE "event" ADD CONSTRAINT "start_date_before_end_date" CHECK (start_date <= end_date);
 
+-- for text search
+ALTER TABLE "event" ADD COLUMN ts tsvector
+    GENERATED ALWAYS AS (to_tsvector('english', description)) STORED;
+
 -- triggers
 
+-- we need to be sure that the event that we are scheduling has the
+-- number of seats that is not greater that number of seats in the
+-- location that it will take place
 CREATE OR REPLACE FUNCTION check_event_seats_less_than_location_seats()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -79,10 +86,10 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_event_seats BEFORE INSERT ON "event" FOR EACH ROW EXECUTE FUNCTION check_event_seats_less_than_location_seats();
 
-ALTER TABLE "event" ADD COLUMN ts tsvector
-    GENERATED ALWAYS AS (to_tsvector('english', description)) STORED;
-
+-- materialized view that holds the almost sold out events
+-- it it refreshed automatically by trigger "decrement_seats"
 CREATE MATERIALIZED VIEW IF NOT EXISTS soon_sold_out_events AS
+-- CTE to grab artist list
 WITH artist_aggregation AS (
     SELECT 
         event_id, 
@@ -106,11 +113,16 @@ INNER JOIN
     location l ON e.location_id = l.id 
 LEFT JOIN 
     artist_aggregation aa ON aa.event_id = e.id
+    -- almost sold out when < 150
     WHERE e.seats < 150
 WITH NO DATA;
 
+-- need to refresh it on the start
 REFRESH MATERIALIZED VIEW soon_sold_out_events;
 
+-- this trigger is invoked when ticket is inserted into database.
+-- it decrements the number of seats for particular event and potentially
+-- refreshes the "soon_sold_out_events" materialzied view
 CREATE OR REPLACE FUNCTION decrement_seats() RETURNS TRIGGER AS $$
 DECLARE
     current_seats integer;
@@ -138,6 +150,27 @@ CREATE TRIGGER trg_decrement_seats
 AFTER INSERT ON "ticket"
 FOR EACH ROW
 EXECUTE FUNCTION decrement_seats();
+
+-- This function adds event, it takes all args that are needed to crate event
+-- record itself and also arbitrary len of artists ids. 
+CREATE OR REPLACE FUNCTION add_event(aname varchar(255), adescription varchar(255), agenre varchar(10), 
+    astart_date date, aend_date date, aseats bigint, alocation_id bigint, VARIADIC aartists BIGINT[]) RETURNS void
+AS $$
+DECLARE
+    event_id bigint;
+    aartist bigint;
+BEGIN
+    INSERT INTO event(name, description, genre, start_date, end_date, seats, location_id) VALUES (
+        aname, adescription, agenre, astart_date, aend_date, aseats, alocation_id
+    ) RETURNING id into event_id;
+
+    FOREACH aartist IN ARRAY aartists
+    LOOP
+        INSERT INTO event_artist(event_id,artist_id) VALUES(event_id, aartist);
+    END LOOP;
+END;
+$$LANGUAGE plpgsql;
+
 
 -- load test data
 INSERT INTO "location" ("id", "name", "seats", "coordinates") VALUES
@@ -186,5 +219,6 @@ INSERT INTO "ticket" (id, owner_id, event_id, price, currency) VALUES
 (6, 3, 1, 90.00, 'GBP'),
 (7, 3, 6, 190.00, 'GBP');
 
+-- adjust sequence due to manually inserted ids
 SELECT setval(pg_get_serial_sequence('"ticket"', 'id'), MAX(id)) FROM "ticket";
 SELECT setval(pg_get_serial_sequence('"event"', 'id'), MAX(id)) FROM "event";

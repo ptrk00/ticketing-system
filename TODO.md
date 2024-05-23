@@ -3,7 +3,7 @@
 * USER permissions
 
 * views
-* materialized views
+<!-- * materialized views -->
 * more triggers
 * more functions
 * procedury
