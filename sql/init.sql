@@ -82,14 +82,52 @@ CREATE TRIGGER check_event_seats BEFORE INSERT ON "event" FOR EACH ROW EXECUTE F
 ALTER TABLE "event" ADD COLUMN ts tsvector
     GENERATED ALWAYS AS (to_tsvector('english', description)) STORED;
 
+CREATE MATERIALIZED VIEW IF NOT EXISTS soon_sold_out_events AS
+WITH artist_aggregation AS (
+    SELECT 
+        event_id, 
+        array_agg(artist.name) as artists 
+    FROM 
+        event_artist 
+    LEFT JOIN 
+        artist ON artist.id = event_artist.artist_id 
+    GROUP BY 
+        event_id
+)
+SELECT 
+    e.name as event_name, 
+    e.description, 
+    e.seats as seats_left, 
+    l.name as location_name, 
+    aa.artists 
+FROM 
+    event e 
+INNER JOIN 
+    location l ON e.location_id = l.id 
+LEFT JOIN 
+    artist_aggregation aa ON aa.event_id = e.id
+    WHERE e.seats < 150
+WITH NO DATA;
+
+REFRESH MATERIALIZED VIEW soon_sold_out_events;
+
 CREATE OR REPLACE FUNCTION decrement_seats() RETURNS TRIGGER AS $$
+DECLARE
+    current_seats integer;
 BEGIN
   UPDATE "event"
   SET seats = seats - 1
-  WHERE id = NEW.event_id AND seats > 0;
+  WHERE id = NEW.event_id AND seats > 0
+  RETURNING seats INTO current_seats;
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'No seats available for event_id %', NEW.event_id;
+  END IF;
+
+  RAISE NOTICE 'current_seats is currently %', current_seats;
+  IF current_seats < 150 THEN
+    RAISE NOTICE 'refreshing materialized view';
+    REFRESH MATERIALIZED VIEW soon_sold_out_events;
   END IF;
 
   RETURN NEW;

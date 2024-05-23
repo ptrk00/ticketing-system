@@ -42,4 +42,35 @@ CREATE OR REPLACE AGGREGATE popularity(seats bigint, location_id bigint) (
 
 select e.genre, popularity(e.seats, e.location_id) from event e group by e.genre;
 
-select e.seats, l.seats, e.genre from event e inner join location l on e.location_id=l.id;
+select e.seats as available_seats, l.seats as location_seats, e.genre from event e inner join location l on e.location_id=l.id;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS my_new_view AS
+WITH artist_aggregation AS (
+    SELECT 
+        event_id, 
+        array_agg(artist.name) as artists 
+    FROM 
+        event_artist 
+    LEFT JOIN 
+        artist ON artist.id = event_artist.artist_id 
+    GROUP BY 
+        event_id
+)
+SELECT 
+    e.name as event_name, 
+    e.description, 
+    e.seats as seats_left, 
+    l.name as location_name, 
+    aa.artists 
+FROM 
+    event e 
+INNER JOIN 
+    location l ON e.location_id = l.id 
+LEFT JOIN 
+    artist_aggregation aa ON aa.event_id = e.id
+    -- WHERE e.seats < 150
+WITH NO DATA;
+
+REFRESH MATERIALIZED VIEW soon_sold_out_events;
+
+SELECT * FROM soon_sold_out_events;

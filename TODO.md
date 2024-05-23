@@ -1,6 +1,7 @@
 * indexes
 * schema
 * USER permissions
+
 * views
 * materialized views
 * more triggers
@@ -8,3 +9,6 @@
 * procedury
 * wlasna funkcja aggregage
 * function stability
+* rula
+
+* add original no of seats to event
