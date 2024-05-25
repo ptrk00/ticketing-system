@@ -14,8 +14,6 @@
 * add original no of seats to event
 
 <!-- 
-add limit do materialzied view (order by  i limit)
-
 tabele
 * zrobic cos z on delete cascade
 
@@ -47,6 +45,5 @@ query
 * window funciton
 
 widoki
-* view for event
 * jakies proste...
  -->

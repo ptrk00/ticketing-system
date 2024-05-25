@@ -39,22 +39,36 @@ async def list_events(request: Request,
        
 
 @router.get("/bestsellers")
-async def get_best_selling_events(db: asyncpg.Pool = Depends(get_db)):
+async def get_best_selling_events(request: Request,
+                                db: asyncpg.Pool = Depends(get_db),
+                                response_type: str = Depends(get_accept_header),
+                                responce_class=HTMLResponse):
     async with db.acquire() as connection:
         events = await connection.fetch(
             """
-            SELECT 
+            SELECT distinct
                 event.name,
-                COUNT(ticket.id) as tickets_sold
+                event.description,
+                event.start_date,
+                event.end_date,
+                event.image_url,
+                location.name as location_name,
+                COUNT(ticket.id) over(partition by event.id) as tickets_sold
             FROM "ticket" 
                 INNER JOIN event ON ticket.event_id = event.id 
                 INNER JOIN location ON event.location_id = location.id
-            GROUP BY event.name
             ORDER BY tickets_sold DESC
             LIMIT 3
             """
         )
-        return [dict(event) for event in events]
+    events = [dict(event) for event in events]
+    if response_type == "json":
+        return events
+    else:
+        return templates.TemplateResponse(
+            request=request, name="events/event_bestsellers.html",
+            context={"events": events}
+        )    
 
 @router.get("/search")
 async def search_for_events(request: Request,
