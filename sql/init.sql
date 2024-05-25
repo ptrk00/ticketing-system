@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS "event" (
     "start_date"    DATE NOT NULL,
     "end_date"      DATE NOT NULL,
     "seats"         BIGINT NOT NULL CHECK(seats > 0), 
-    "location_id"   BIGINT NOT NULL
+    "location_id"   BIGINT NOT NULL,
+    "image_url"     VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS "user" (
@@ -104,6 +105,7 @@ WITH artist_aggregation AS (
 SELECT 
     e.name as event_name, 
     e.description, 
+    e.image_url as image_url,
     e.seats as seats_left, 
     l.name as location_name, 
     aa.artists 
@@ -115,6 +117,8 @@ LEFT JOIN
     artist_aggregation aa ON aa.event_id = e.id
     -- almost sold out when < 150
     WHERE e.seats < 150
+    ORDER BY e.seats ASC
+    LIMIT 3
 WITH NO DATA;
 
 -- need to refresh it on the start
@@ -180,13 +184,13 @@ INSERT INTO "location" ("id", "name", "seats", "coordinates") VALUES
 (4, 'fourth place', 250, ST_GeogFromText('POINT(-70.935242 20.730610)')),
 (5, 'fifth place', 300, ST_GeogFromText('POINT(-79.935242 20.730610)'));
 
-INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_id", "description", "genre") VALUES
-(1, 'Music Concert', '2024-06-01', '2024-06-01', 100, 1, 'A grand music concert featuring famous bands.', 'art'),
-(2, 'Tech Conference', '2024-07-15', '2024-07-17', 150, 2, 'Annual tech conference with keynotes and workshops.', 'art'),
-(3, 'Food Festival', '2024-08-20', '2024-08-22', 200, 3, 'A festival showcasing gourmet food from around the world and musical.', 'buisness'),
-(4, 'Art Exhibition', '2024-09-10', '2024-09-12', 250, 4, 'Exhibition of modern and contemporary art pieces.', 'education'),
-(5, 'Book Fair', '2024-10-05', '2024-10-07', 300, 5, 'A fair where you can find books from various genres and authors.', 'art'),
-(6, 'Book Fair Super Exclusive', '2024-10-05', '2024-10-07', 50, 3, 'A fair where you can find super exclusive books from various genres and authors.', 'sport');
+INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_id", "description", "genre", "image_url") VALUES
+(1, 'Music Concert', '2024-06-01', '2024-06-01', 100, 1, 'A grand music concert featuring famous bands.', 'art', 'https://cdn.pixabay.com/photo/2016/11/18/15/44/audience-1835431_960_720.jpg'),
+(2, 'Tech Conference', '2024-07-15', '2024-07-17', 150, 2, 'Annual tech conference with keynotes and workshops.', 'buisness', 'https://cdn.pixabay.com/photo/2016/02/03/17/38/coffee-break-1177540_1280.jpg'),
+(3, 'Food Festival', '2024-08-20', '2024-08-22', 200, 3, 'A festival showcasing gourmet food from around the world and musical.', 'sport', 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg'),
+(4, 'Art Exhibition', '2024-09-10', '2024-09-12', 250, 4, 'Exhibition of modern and contemporary art pieces.', 'art', 'https://cdn.pixabay.com/photo/2016/03/15/12/24/student-1258137_960_720.jpg'),
+(5, 'Book Fair', '2024-10-05', '2024-10-07', 300, 5, 'A fair where you can find books from various genres and authors.', 'education', 'https://cdn.pixabay.com/photo/2020/04/17/08/03/books-5053733_960_720.jpg'),
+(6, 'Book Fair Super Exclusive', '2024-10-05', '2024-10-07', 50, 3, 'A fair where you can find super exclusive books from various genres and authors.', 'education', 'https://cdn.pixabay.com/photo/2014/09/05/18/32/old-books-436498_1280.jpg');
 
 INSERT INTO "user" (id, name, email, birthdate) VALUES
 (1, 'Alice Smith', 'alice.smith@example.com', '1990-01-15'),

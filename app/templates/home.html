@@ -10,19 +10,25 @@
     <p>Use the navigation bar above to browse through the sections: Events, Users, Locations, and Artists.</p>
 </div>
 
-<div id="eventCarousel" class="carousel slide" data-ride="carousel">
+<h2>Last tickets available</h2>
+<div id="eventCarousel" class="carousel slide bg-dark text-white" data-ride="carousel" style="max-width: 800px; margin: auto;">
     <div class="carousel-inner">
         {% for event in events %}
         <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
-            <div class="d-block w-100" style="height: 300px; background: #ccc;">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>{{ event.event_name }}</h5>
-                    <p>{{ event.description }}</p>
-                    <p><strong>Location:</strong> {{ event.location_name }}</p>
-                    <p><strong>Seats Left:</strong> {{ event.seats_left }}</p>
-                    {% if event.artists %}
-                    <p><strong>Artists:</strong> {{ event.artists | join(", ") }}</p>
-                    {% endif %}
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    <img src="{{ event.image_url }}" class="d-block w-100" alt="{{ event.event_name }}" style="height: 300px; object-fit: cover;">
+                </div>
+                <div class="col-md-8">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>{{ event.event_name }}</h5>
+                        <p>{{ event.description }}</p>
+                        <p><strong>Location:</strong> {{ event.location_name }}</p>
+                        <p><strong>Seats Left:</strong> {{ event.seats_left }}</p>
+                        {% if event.artists %}
+                        <p><strong>Artists:</strong> {{ event.artists | join(", ") }}</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
