@@ -47,6 +47,7 @@ async def get_best_selling_events(request: Request,
         events = await connection.fetch(
             """
             SELECT distinct
+                event.id,
                 event.name,
                 event.description,
                 event.start_date,
@@ -118,6 +119,7 @@ async def search_for_events_by_description(request: Request,
         context={"events": events}
     )    
 
+# TODO: for now not implemented in ui
 @router.get("/search/description/all")
 async def search_for_events_by_descriptio_full_rankn(q: str = Query(min_length=1), 
                             db: asyncpg.Pool = Depends(get_db)):
@@ -194,25 +196,52 @@ async def get_events_artist( event_id: int, db: asyncpg.Pool = Depends(get_db)):
 
 
 @router.get("/{event_id}")
-async def get_events( event_id: int, db: asyncpg.Pool = Depends(get_db)):
+async def get_events(request: Request,
+                    event_id: int, 
+                    db: asyncpg.Pool = Depends(get_db),
+                    response_type: str = Depends(get_accept_header),
+                    responce_class=HTMLResponse
+                    ):
     async with db.acquire() as connection:
-        events = await connection.fetch(
+        event = await connection.fetchrow(
             """
+          WITH artist_aggregation AS (
             SELECT 
-                event.id, 
-                event.name, 
-                description, 
-                start_date, 
-                end_date, 
-                event.seats as "seats_left", 
-                location.name as "location_name" 
-            FROM "event" 
-                INNER JOIN location ON event.location_id = location.id 
-            WHERE event.id = $1
+                event_id, 
+                array_agg(artist.name) as artists 
+            FROM 
+                event_artist 
+            LEFT JOIN 
+                artist ON artist.id = event_artist.artist_id 
+            GROUP BY 
+                event_id
+        )
+        SELECT
+            e.name as event_name, 
+            e.description,
+            e.image_url,
+            e.start_date,
+            e.end_date, 
+            e.seats as seats_left, 
+            l.name as location_name, 
+            aa.artists 
+        FROM 
+            event e 
+        INNER JOIN 
+            location l ON e.location_id = l.id 
+        LEFT JOIN 
+            artist_aggregation aa ON aa.event_id = e.id
+        WHERE e.id = $1
             """, event_id
         )
-        return [dict(event) for event in events]
-
+    if response_type == "json":
+        return event
+    else:
+        return templates.TemplateResponse(
+        request=request, name="events/event.html",
+        context={"event": event}
+    )    
+     
 class CreateEventPayload(BaseModel):
     name: str
     description: str

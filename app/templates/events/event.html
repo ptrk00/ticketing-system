@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center">{{ event.event_name }}</h1>
+            <img src="{{ event.image_url }}" class="img-fluid mb-4" alt="{{ event.event_name }}">
+            <p><strong>Description:</strong> {{ event.description }}</p>
+            <p><strong>Start Date:</strong> {{ event.start_date }}</p>
+            <p><strong>End Date:</strong> {{ event.end_date }}</p>
+            <p><strong>Seats Left:</strong> {{ event.seats_left }}</p>
+            <p><strong>Location:</strong> {{ event.location_name }}</p>
+            {% if event.artists %}
+            <p><strong>Artists:</strong> {{ event.artists | join(', ') }}</p>
+            {% endif %}
+            <div class="text-center mt-4">
+                <a class="btn btn-primary" href="/events">Back to Events List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
