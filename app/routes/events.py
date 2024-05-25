@@ -1,21 +1,29 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
+from fastapi.responses import HTMLResponse
 from database.db import get_db
 import asyncpg
 from pydantic import BaseModel
+from middlewares.middleware import get_accept_header
+from fastapi.templating import Jinja2Templates
 import datetime
 
 router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/")
-async def list_events(db: asyncpg.Pool = Depends(get_db), 
+async def list_events(request: Request,
+                        db: asyncpg.Pool = Depends(get_db), 
                         limit: int = Query(3, ge=1),
-                        offset: int = Query(0, ge=0)):
+                        offset: int = Query(0, ge=0),
+                        response_type: str = Depends(get_accept_header),
+                        responce_class=HTMLResponse):
     async with db.acquire() as connection:
         events = await connection.fetch(
             """
             SELECT 
                 event.id, 
-                event.name, 
+                event.name,
+                event.image_url as image_url,
                 description, 
                 start_date, 
                 end_date, 
@@ -26,7 +34,17 @@ async def list_events(db: asyncpg.Pool = Depends(get_db),
             ORDER BY id LIMIT $1 OFFSET $2
             """, limit, offset
         )
-        return [dict(event) for event in events]
+        total_events = await connection.fetchval("SELECT COUNT(*) FROM event")
+        events = [dict(event) for event in events]
+        if response_type == "json":
+            return events
+        else:
+            return templates.TemplateResponse(
+        request=request, name="events/events.html",
+        context={"events": events, "total_events": total_events,
+        "offset": offset, "limit": limit}
+        )    
+       
 
 @router.get("/bestsellers")
 async def get_best_selling_events(db: asyncpg.Pool = Depends(get_db)):

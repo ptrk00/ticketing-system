@@ -36,7 +36,7 @@ async def list_users(request: Request,
         return all_users
     else:
         return templates.TemplateResponse(
-        request=request, name="users.html",
+        request=request, name="users/users.html",
         context={"users": all_users, "limit": limit, "offset": offset, "total_users": total_users}
     )
 
@@ -62,7 +62,7 @@ async def get_user(request: Request,
         return user
     else:
         return templates.TemplateResponse(
-        request=request, name="user.html",
+        request=request, name="users/user.html",
         context={"user": user}
     )    
 
@@ -95,7 +95,7 @@ async def get_user_tickets(request: Request,
         return tickets
     else:
         return templates.TemplateResponse(
-        request=request, name="user_tickets.html",
+        request=request, name="users/user_tickets.html",
         context={"tickets": tickets, "user_id": user_id}
     )    
     
@@ -130,30 +130,6 @@ async def get_user_ticket(request: Request,
         return ticket
     else:
         return templates.TemplateResponse(
-        request=request, name="user_ticket.html",
+        request=request, name="users/user_ticket.html",
         context={"ticket": ticket, "user_id": user_id}
     )    
-
-
-# @router.get("/{user_id}/tickets")
-# async def get_user_tickets(user_id: int, db: asyncpg.Pool = Depends(get_db)):
-#     async with db.acquire() as connection:
-#         result = await connection.fetch(
-#             """
-#             SELECT 
-#                 "user".id as owner_id, 
-#                 "user".name,
-#                 "user".email,
-#                 ticket.id as ticket_id,
-#                 ticket.price,
-#                 ticket.currency,
-#                 event.name as event_name,
-#                 location.name as location_name
-#             FROM "user" 
-#             INNER JOIN "ticket" ON "user".id=ticket.owner_id
-#             INNER JOIN "event" ON ticket.event_id=event.id
-#             INNER JOIN "location" ON event.location_id=location.id
-#             WHERE "user".id = $1 GROUP BY location.id
-#             """, user_id
-#         )
-#         return [dict(result) for result in result]
