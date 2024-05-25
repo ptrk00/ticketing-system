@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}User Tickets{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center">Tickets for User {{ user_id }}</h1>
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Event</th>
+                        <th>Location</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr onclick="window.location='/users/{{ user_id }}/tickets/{{ticket.ticket_id}}';" style="cursor: pointer;">
+                        <td>{{ ticket.ticket_id }}</td>
+                        <td>{{ ticket.event_name }}</td>
+                        <td>{{ ticket.location_name }}</td>
+                        <td>{{ ticket.price }} {{ ticket.currency }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a class="btn btn-primary" href="/users/{{ user_id }}">Back to User Details</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
