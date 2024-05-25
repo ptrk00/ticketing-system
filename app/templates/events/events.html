@@ -5,6 +5,18 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center">Events</h1>
+    
+    <!-- Search Bar -->
+    <form class="form-inline my-4" action="/events/search" method="get">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search by event name" aria-label="Search" name="q" value="{{ request.query_params.q }}">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+
+    <form class="form-inline my-4" action="/events/search/description" method="get">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search by event description" aria-label="Search" name="q" value="{{ request.query_params.q }}">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    
     <div class="row">
         {% for event in events %}
         <div class="col-md-4 mb-4">
@@ -28,7 +40,7 @@
         <ul class="pagination justify-content-center">
             {% if offset > 0 %}
             <li class="page-item">
-                <a class="page-link" href="/events?offset={{ offset - limit }}&limit={{ limit }}" aria-label="Previous">
+                <a class="page-link" href="?offset={{ offset - limit }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}" aria-label="Previous">
                     <span aria-hidden="true">&laquo; Previous</span>
                 </a>
             </li>
@@ -36,18 +48,23 @@
 
             {% for p in range(0, total_events, limit) %}
             <li class="page-item {% if offset == p %}active{% endif %}">
-                <a class="page-link" href="/events?offset={{ p }}&limit={{ limit }}">{{ p // limit + 1 }}</a>
+                <a class="page-link" href="?offset={{ p }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}">{{ p // limit + 1 }}</a>
             </li>
             {% endfor %}
 
             {% if offset + limit < total_events %}
             <li class="page-item">
-                <a class="page-link" href="/events?offset={{ offset + limit }}&limit={{ limit }}" aria-label="Next">
+                <a class="page-link" href="?offset={{ offset + limit }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}" aria-label="Next">
                     <span aria-hidden="true">Next &raquo;</span>
                 </a>
             </li>
             {% endif %}
         </ul>
     </nav>
+
+    <div class="text-center mt-5">
+        <a class="btn btn-primary btn-lg" href="/events/bestsellers" role="button">View Bestseller Events</a>
+    </div>
+
 </div>
 {% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Events</h1>
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ event.image_url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ event.name }}</h5>
+                    <p class="card-text">{{ event.description }}</p>
+                    <p><strong>Location:</strong> {{ event.location_name }}</p>
+                    <p><strong>Seats Left:</strong> {{ event.seats_left }}</p>
+                    <p><strong>Start Date:</strong> {{ event.start_date }}</p>
+                    <p><strong>End Date:</strong> {{ event.end_date }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -47,5 +47,6 @@ query
 * window funciton
 
 widoki
+* view for event
 * jakies proste...
  -->

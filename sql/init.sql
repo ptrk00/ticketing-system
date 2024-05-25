@@ -175,6 +175,20 @@ BEGIN
 END;
 $$LANGUAGE plpgsql;
 
+-- view for quering events
+CREATE OR REPLACE VIEW event_details AS 
+    SELECT 
+        event.id, 
+        event.name,
+        event.image_url as image_url,
+        description, 
+        start_date, 
+        end_date, 
+        event.seats as "seats_left", 
+        location.name as "location_name",
+        event.ts as ts
+    FROM "event" 
+        INNER JOIN location ON event.location_id = location.id;
 
 -- load test data
 INSERT INTO "location" ("id", "name", "seats", "coordinates") VALUES
