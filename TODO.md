@@ -46,4 +46,8 @@ query
 
 widoki
 * jakies proste...
+* zmienic ten event_detail na jakis event_digset, dodac pola short description i long description, w digest view wyswietlac
+* tylko short, w detailed long tez
+
+* podobnie pododawac jakies fieldy do ticket by rozroznic detailed view od short view, zmienic co jest wyswietlane w podgladzie a w full view
  -->

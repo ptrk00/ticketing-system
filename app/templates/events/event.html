@@ -16,6 +16,16 @@
             {% if event.artists %}
             <p><strong>Artists:</strong> {{ event.artists | join(', ') }}</p>
             {% endif %}
+
+            <!-- Embedded Google Map -->
+            <div class="embed-responsive embed-responsive-16by9 mb-4">
+                <iframe
+                    class="embed-responsive-item"
+                    src="https://www.google.com/maps/embed/v1/place?key={{ api_key }}&q={{ event.latitude }},{{ event.longitude }}"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            
             <div class="text-center mt-4">
                 <a class="btn btn-primary" href="/events">Back to Events List</a>
             </div>

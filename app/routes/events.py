@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from middlewares.middleware import get_accept_header
 from fastapi.templating import Jinja2Templates
 import datetime
+import os
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -175,6 +176,7 @@ async def search_nearest_events(long: float = Query(),
         )
         return [dict(event) for event in events]
 
+# TODO: for now not implemented in ui
 @router.get("/{event_id}/artist")
 async def get_events_artist( event_id: int, db: asyncpg.Pool = Depends(get_db)):
     async with db.acquire() as connection:
@@ -224,6 +226,8 @@ async def get_events(request: Request,
             e.end_date, 
             e.seats as seats_left, 
             l.name as location_name, 
+            ST_Y(ST_AsText(l.coordinates::geometry)) as latitude,
+            ST_X(ST_AsText(l.coordinates::geometry)) as longitude,
             aa.artists 
         FROM 
             event e 
@@ -234,12 +238,13 @@ async def get_events(request: Request,
         WHERE e.id = $1
             """, event_id
         )
+    print(os.getenv("GOOGLE_MAPS_API_KEY"))
     if response_type == "json":
         return event
     else:
         return templates.TemplateResponse(
         request=request, name="events/event.html",
-        context={"event": event}
+        context={"event": event, "api_key": os.getenv("GOOGLE_MAPS_API_KEY")}
     )    
      
 class CreateEventPayload(BaseModel):

@@ -193,7 +193,7 @@ CREATE OR REPLACE VIEW event_details AS
 -- load test data
 INSERT INTO "location" ("id", "name", "seats", "coordinates") VALUES
 (1, 'first place', 100, ST_GeogFromText('POINT(-70.935242 90.730610)')),
-(2, 'second place', 150, ST_GeogFromText('POINT(-76.935242 46.730610)')),
+(2, 'AGH University', 150, ST_GeogFromText('POINT(19.92330738650622 50.06458216297299)')),
 (3, 'third place', 200, ST_GeogFromText('POINT(-70.935242 10.730610)')),
 (4, 'fourth place', 250, ST_GeogFromText('POINT(-70.935242 20.730610)')),
 (5, 'fifth place', 300, ST_GeogFromText('POINT(-79.935242 20.730610)'));
