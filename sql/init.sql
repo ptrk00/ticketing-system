@@ -196,7 +196,7 @@ INSERT INTO "location" ("id", "name", "seats", "coordinates") VALUES
 (2, 'AGH University', 150, ST_GeogFromText('POINT(19.92330738650622 50.06458216297299)')),
 (3, 'third place', 200, ST_GeogFromText('POINT(-70.935242 10.730610)')),
 (4, 'fourth place', 250, ST_GeogFromText('POINT(-70.935242 20.730610)')),
-(5, 'fifth place', 300, ST_GeogFromText('POINT(-79.935242 20.730610)'));
+(5, 'Biblioteka UW', 300, ST_GeogFromText('POINT(21.02476929686503 52.24265017514509)'));
 
 INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_id", "description", "genre", "image_url") VALUES
 (1, 'Music Concert', '2024-06-01', '2024-06-01', 100, 1, 'A grand music concert featuring famous bands.', 'art', 'https://cdn.pixabay.com/photo/2016/11/18/15/44/audience-1835431_960_720.jpg'),

@@ -111,7 +111,6 @@ async def search_for_events_by_description(request: Request,
             WHERE event_details.ts @@ to_tsquery('english', $1);
             """, q
         )
-    events = [dict(event) for event in events]
     if response_type == "json":
         return events
     else:
@@ -147,20 +146,35 @@ async def search_events_in_range(range: int = Query(gt=1),
             """
              SELECT 
                 event.id,
-                event.name as event_name,
-                location.name as location_name,
+                event.name as name,
+                l.name as location_name,
+                ST_Y(ST_AsText(l.coordinates::geometry)) as latitude,
+                ST_X(ST_AsText(l.coordinates::geometry)) as longitude,
                 ST_Distance(coordinates, ST_GeogFromText($1)) AS distance
              FROM "event"
-                INNER JOIN location on event.location_id=location.id 
-                WHERE ST_DWithin(location.coordinates, ST_GeogFromText($2), $3);
-            """, f'POINT({long} {lat})', f'POINT({long} {lat})', range
+                INNER JOIN location l on event.location_id=l.id 
+                WHERE ST_DWithin(l.coordinates, ST_GeogFromText($2), $3)
+                ORDER BY distance ASC;
+            """, f'POINT({long} {lat})', f'POINT({long} {lat})', range * 1000
         )
         return [dict(event) for event in events]
 
+@router.get("/closerange")
+async def search_events_in_range_view(request: Request,
+                            response_type: str = Depends(get_accept_header),
+                            responce_class=HTMLResponse):
+    return templates.TemplateResponse(
+        request=request, name="events/events_nearest.html",
+        context={"api_key": os.getenv("GOOGLE_MAPS_API_KEY")})
+
+
 @router.get("/nearest")
-async def search_nearest_events(long: float = Query(),
+async def search_nearest_events(request: Request,
+                            long: float = Query(),
                             lat: float = Query(),
-                            db: asyncpg.Pool = Depends(get_db)):
+                            db: asyncpg.Pool = Depends(get_db),
+                            response_type: str = Depends(get_accept_header),
+                            responce_class=HTMLResponse):
     async with db.acquire() as connection:
         events = await connection.fetch(
             """
@@ -174,7 +188,14 @@ async def search_nearest_events(long: float = Query(),
                 ORDER BY location.coordinates <-> ST_GeogFromText($2)
             """, f'POINT({long} {lat})', f'POINT({long} {lat})'
         )
-        return [dict(event) for event in events]
+    events = [dict(event) for event in events]
+    if response_type == "json":
+        return events
+    else:
+        return templates.TemplateResponse(
+        request=request, name="events/events_nearest.html",
+        context={"events": events, "api_key": os.getenv("GOOGLE_MAPS_API_KEY")}
+    )    
 
 # TODO: for now not implemented in ui
 @router.get("/{event_id}/artist")
@@ -238,7 +259,6 @@ async def get_events(request: Request,
         WHERE e.id = $1
             """, event_id
         )
-    print(os.getenv("GOOGLE_MAPS_API_KEY"))
     if response_type == "json":
         return event
     else:
