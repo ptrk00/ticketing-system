@@ -50,15 +50,30 @@ async def get_events(request: Request,
     async with db.acquire() as connection:
         location = await connection.fetchrow(
             """
+            WITH closest_event AS (
+                SELECT
+                    event.name,
+                    event.start_date,
+                    event.seats as seats_left
+                FROM
+                    event
+                WHERE event.location_id = $1
+                AND current_date < event.start_date
+                ORDER BY start_date ASC LIMIT 1
+            )
+
             SELECT 
                 id, 
-                name,
+                location.name,
                 image_url, 
                 seats as max_seats, 
                 ST_Y(ST_AsText(location.coordinates::geometry)) as latitude,
                 ST_X(ST_AsText(location.coordinates::geometry)) as longitude,
-                description
-            FROM "location" 
+                description,
+                closest_event.name as closest_event_name,
+                closest_event.start_date as closest_event_start_date,
+                closest_event.seats_left as closest_event_seats_left
+            FROM "location", closest_event 
             WHERE id = $1
             """, location_id
         )

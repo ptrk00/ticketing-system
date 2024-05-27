@@ -24,6 +24,9 @@
             <div class="text-center mt-4">
                 <a class="btn btn-primary" href="/locations">Back to locations List</a>
             </div>
+            <p><strong>Closest event:</strong> {{ location.closest_event_name }}</p>
+            <p><strong>Closest event Max:</strong> {{ location.closest_event_start_date }}</p>
+            <p><strong>Closest event seats left</strong>{{ location.closest_event_seats_left }}</p>
         </div>
     </div>
 </div>
