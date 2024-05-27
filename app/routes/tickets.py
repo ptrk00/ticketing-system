@@ -59,7 +59,9 @@ async def get_ticket(request: Request,
                 "user".name as owner_name,
                 "user".email as owner_email,
                 price,
-                currency
+                currency,
+                bought_at,
+                revoked
             FROM "ticket"
             INNER JOIN "user" ON ticket.owner_id="user".id
             INNER JOIN "event" ON ticket.event_id=event.id 

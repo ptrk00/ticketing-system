@@ -3,7 +3,9 @@ CREATE TABLE IF NOT EXISTS "ticket" (
     "owner_id"  BIGINT NOT NULL,
     "event_id"  BIGINT NOT NULL,
     "price"     NUMERIC(12,2) CHECK(price > 0),
-    "currency"  VARCHAR(3) CHECK (currency IN ('PLN', 'USD', 'EUR', 'GBP'))  
+    "currency"  VARCHAR(3) CHECK (currency IN ('PLN', 'USD', 'EUR', 'GBP')),
+    "bought_at" timestamptz NOT NULL,
+    "revoked"   BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "event_artist" (
@@ -267,14 +269,14 @@ INSERT INTO "event_artist" (event_id, artist_id) VALUES
 (1, 5),
 (2, 1);
 
-INSERT INTO "ticket" (id, owner_id, event_id, price, currency) VALUES
-(1, 1, 5, 50.00, 'USD'),
-(2, 2, 4, 75.00, 'EUR'), 
-(3, 3, 3, 100.00, 'GBP'),
-(4, 4, 2, 120.00, 'PLN'), 
-(5, 5, 1, 60.00, 'USD'),
-(6, 3, 1, 90.00, 'GBP'),
-(7, 3, 6, 190.00, 'GBP');
+INSERT INTO "ticket" (id, owner_id, event_id, price, currency, bought_at) VALUES
+(1, 1, 5, 50.00, 'USD','2023-02-02 01:06+10'::timestamptz),
+(2, 2, 4, 75.00, 'EUR','2023-03-03 02:05+10'::timestamptz), 
+(3, 3, 3, 100.00, 'GBP','2022-07-12 03:04+10'::timestamptz),
+(4, 4, 2, 120.00, 'PLN','2023-08-10 04:03+10'::timestamptz), 
+(5, 5, 1, 60.00, 'USD','2023-09-11 05:02+10'::timestamptz),
+(6, 3, 1, 90.00, 'GBP','2024-01-01 06:01+10'::timestamptz),
+(7, 3, 6, 190.00, 'GBP', NOW());
 
 -- adjust sequence due to manually inserted ids
 SELECT setval(pg_get_serial_sequence('"ticket"', 'id'), MAX(id)) FROM "ticket";
