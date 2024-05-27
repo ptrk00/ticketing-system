@@ -23,7 +23,7 @@ async def list_events(request: Request,
             """
             SELECT 
                 *
-            FROM event_details
+            FROM event_overview
             ORDER BY id LIMIT $1 OFFSET $2
             """, limit, offset
         )
@@ -82,8 +82,8 @@ async def search_for_events(request: Request,
         events = await connection.fetch(
             """
             SELECT * 
-                FROM event_details
-            WHERE event_details.name ILIKE $1
+                FROM event_overview
+            WHERE event_overview.name ILIKE $1
             """, f"%{q}%"
         )
         
@@ -107,8 +107,8 @@ async def search_for_events_by_description(request: Request,
             """
          SELECT 
             *
-         FROM event_details
-            WHERE event_details.ts @@ to_tsquery('english', $1);
+         FROM event_overview
+            WHERE event_overview.ts @@ to_tsquery('english', $1);
             """, q
         )
     if response_type == "json":

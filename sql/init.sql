@@ -180,7 +180,7 @@ END;
 $$LANGUAGE plpgsql;
 
 -- view for quering events
-CREATE OR REPLACE VIEW event_details AS 
+CREATE OR REPLACE VIEW event_overview AS 
     SELECT 
         event.id, 
         event.name,
