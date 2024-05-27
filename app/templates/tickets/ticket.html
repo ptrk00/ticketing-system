@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center">User Details</h1>
+            <table class="table table-bordered">
+                <tr>
+                    <th>ID</th>
+                    <td>{{ ticket.id }}</td>
+                </tr>
+                <tr>
+                    <th>Owner Name</th>
+                    <td>{{ ticket.owner_name }}</td>
+                </tr>
+                <tr>
+                    <th>Owner Email</th>
+                    <td>{{ ticket.owner_email }}</td>
+                </tr>
+                <tr>
+                    <th>Price</th>
+                    <td>{{ ticket.price }} {{ ticket.currency }}</td>
+                </tr>
+                <tr>
+                    <th>Event Name</th>
+                    <td>{{ ticket.event }}</td>
+                </tr>
+                <tr>
+                    <th>Event Start date</th>
+                    <td>{{ ticket.event_start_date }}</td>
+                </tr>
+            </table>
+            <div class="d-flex justify-content-between">
+                <a class="btn btn-primary" href="/tickets">Back to Ticket List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

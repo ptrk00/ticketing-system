@@ -1,13 +1,20 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from database.db import get_db
 import asyncpg
+from middlewares.middleware import get_accept_header
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/")
-async def list_tickets(db: asyncpg.Pool = Depends(get_db), 
+async def list_tickets(request: Request,
+                        db: asyncpg.Pool = Depends(get_db), 
                         limit: int = Query(3, ge=1),
-                        offset: int = Query(0, ge=0)):
+                        offset: int = Query(0, ge=0),
+                       response_type: str = Depends(get_accept_header),
+                        responce_class=HTMLResponse ):
     async with db.acquire() as connection:
         tickets = await connection.fetch(
             """
@@ -24,16 +31,31 @@ async def list_tickets(db: asyncpg.Pool = Depends(get_db),
             ORDER BY id LIMIT $1 OFFSET $2
             """, limit, offset
         )
-        return [dict(ticket) for ticket in tickets]
+        total_tickets = await connection.fetchval("SELECT COUNT(*) FROM ticket")
+    tickets = [dict(ticket) for ticket in tickets]
+    if response_type == "json":
+        return tickets
+    else:
+        return templates.TemplateResponse(
+    request=request, name="tickets/tickets.html",
+    context={"tickets": tickets, "total_tickets": total_tickets,
+    "offset": offset, "limit": limit}
+    )    
+
 
 @router.get("/{ticket_id}")
-async def get_ticket(ticket_id: int, db: asyncpg.Pool = Depends(get_db)):
+async def get_ticket(request: Request,
+                        ticket_id: int, 
+                        db: asyncpg.Pool = Depends(get_db),
+                        response_type: str = Depends(get_accept_header),
+                        responce_class=HTMLResponse ):
     async with db.acquire() as connection:
-        tickets = await connection.fetch(
+        ticket = await connection.fetchrow(
             """
             SELECT 
                 ticket.id,
                 event.name as event,
+                event.start_date as event_start_date,
                 "user".name as owner_name,
                 "user".email as owner_email,
                 price,
@@ -44,7 +66,13 @@ async def get_ticket(ticket_id: int, db: asyncpg.Pool = Depends(get_db)):
             WHERE ticket.id=$1
             """, ticket_id
         )
-        return [dict(ticket) for ticket in tickets]
+    if response_type == "json":
+        return ticket
+    else:
+        return templates.TemplateResponse(
+    request=request, name="tickets/ticket.html",
+    context={"ticket": ticket}
+    )    
 
 @router.post("/checkout")
 async def buy_ticket(user_id: int, 
