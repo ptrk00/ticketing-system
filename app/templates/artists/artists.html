@@ -1,0 +1,51 @@
+
+{% extends "base.html" %}
+
+{% block title %}Artists{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Artists</h1>
+    
+    <div class="row">
+        {% for artist in artists %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ artist.image_url }}" class="card-img-top" alt="{{ artist.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body" onclick="window.location='/artists/{{ artist.id }}';" style="cursor: pointer;">
+                    <h5 class="card-title">{{ artist.name }}</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if offset > 0 %}
+            <li class="page-item">
+                <a class="page-link" href="?offset={{ offset - limit }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo; Previous</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for p in range(0, total_artists, limit) %}
+            <li class="page-item {% if offset == p %}active{% endif %}">
+                <a class="page-link" href="?offset={{ p }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}">{{ p // limit + 1 }}</a>
+            </li>
+            {% endfor %}
+
+            {% if offset + limit < total_artists %}
+            <li class="page-item">
+                <a class="page-link" href="?offset={{ offset + limit }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">Next &raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+</div>
+{% endblock %}

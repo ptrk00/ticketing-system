@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS "event_artist" (
 
 CREATE TABLE IF NOT EXISTS "artist" (
     "id"        BIGINT NOT NULL PRIMARY KEY,
-    "name"      VARCHAR(255) NOT NULL CHECK(LENGTH(TRIM(name)) >= 3)
+    "name"      VARCHAR(255) NOT NULL CHECK(LENGTH(TRIM(name)) >= 3),
+    "image_url" VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS "event" (
@@ -222,12 +223,12 @@ INSERT INTO "user" (id, name, email, birthdate) VALUES
 (4, 'Diana Prince', 'diana.prince@example.com', '1988-11-03'),
 (5, 'Evan Davis', 'evan.davis@example.com', '1995-04-28');
 
-INSERT INTO "artist" (id, name) VALUES
-(1, 'Vincent van Gogh'),
-(2, 'Pablo Picasso'),
-(3, 'Leonardo da Vinci'),
-(4, 'Claude Monet'),
-(5, 'Frida Kahlo');
+INSERT INTO "artist" (id, name, image_url) VALUES
+(1, 'Vincent van Gogh', 'https://cdn.pixabay.com/photo/2015/08/02/23/38/agnar-hoeskuldsson-872408_1280.jpg'),
+(2, 'Pablo Picasso', 'https://cdn.pixabay.com/photo/2016/11/29/01/34/man-1866572_1280.jpg'),
+(3, 'Leonardo da Vinci', 'https://cdn.pixabay.com/photo/2015/08/05/10/40/andreas-kappus-876133_960_720.jpg'),
+(4, 'Claude Monet', 'https://cdn.pixabay.com/photo/2015/08/05/10/41/andreas-kaufmann-876134_960_720.jpg'),
+(5, 'Frida Kahlo', 'https://cdn.pixabay.com/photo/2018/04/05/09/32/portrait-3292287_1280.jpg');
 
 INSERT INTO "event_artist" (event_id, artist_id) VALUES
 (5, 1),
