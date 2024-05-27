@@ -52,9 +52,12 @@ async def get_events(request: Request,
             """
             WITH closest_event AS (
                 SELECT
+                    event.id,
                     event.name,
                     event.start_date,
-                    event.seats as seats_left
+                    event.seats as seats_left,
+                    event.image_url,
+                    event.description
                 FROM
                     event
                 WHERE event.location_id = $1
@@ -63,18 +66,21 @@ async def get_events(request: Request,
             )
 
             SELECT 
-                id, 
+                location.id, 
                 location.name,
-                image_url, 
+                location.image_url, 
                 seats as max_seats, 
                 ST_Y(ST_AsText(location.coordinates::geometry)) as latitude,
                 ST_X(ST_AsText(location.coordinates::geometry)) as longitude,
-                description,
+                location.description,
                 closest_event.name as closest_event_name,
                 closest_event.start_date as closest_event_start_date,
-                closest_event.seats_left as closest_event_seats_left
+                closest_event.seats_left as closest_event_seats_left,
+                closest_event.image_url as closest_event_image_url,
+                closest_event.description as closest_event_description,
+                closest_event.id as closest_event_id
             FROM "location", closest_event 
-            WHERE id = $1
+            WHERE location.id = $1
             """, location_id
         )
     if response_type == "json":
