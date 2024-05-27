@@ -1,0 +1,1 @@
+ALTER TABLE "event" ADD CONSTRAINT "start_date_before_end_date" CHECK (start_date <= end_date);

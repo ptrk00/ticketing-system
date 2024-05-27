@@ -31,13 +31,13 @@ funckje
 * liczenie ceny na podstawie event_id i owner_id
 * wlasna funkcja agregująca
 * zrobic funkcje na kupowanie biletu zamiast triggera
+* funckja na usuwanie biletu
+* funckja na usuwanie eventu
+* funckja na usuwanie lokalizacji
+* artysta odwoluje event
 
 procedura
 * jedna z funkcji niech bedzie procedura
-
-rule
-* zrobic ze zamiast delete user niech ma ustawione
-ze sie robi update z active na false czy cos
 
 query
 * fetch
@@ -48,5 +48,4 @@ query
 widoki
 * jakies proste...
 
-* podobnie pododawac jakies fieldy do ticket by rozroznic detailed view od short view, zmienic co jest wyswietlane w podgladzie a w full view
  -->
