@@ -242,6 +242,7 @@ async def get_events(request: Request,
         SELECT
             e.name as event_name, 
             e.description,
+            e.long_description,
             e.image_url,
             e.start_date,
             e.end_date, 
