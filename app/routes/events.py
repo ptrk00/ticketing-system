@@ -228,35 +228,7 @@ async def get_events(request: Request,
     async with db.acquire() as connection:
         event = await connection.fetchrow(
             """
-          WITH artist_aggregation AS (
-            SELECT 
-                event_id, 
-                array_agg(artist.name) as artists 
-            FROM 
-                event_artist 
-            LEFT JOIN 
-                artist ON artist.id = event_artist.artist_id 
-            GROUP BY 
-                event_id
-        )
-        SELECT
-            e.name as event_name, 
-            e.description,
-            e.long_description,
-            e.image_url,
-            e.start_date,
-            e.end_date, 
-            e.seats as seats_left, 
-            l.name as location_name, 
-            ST_Y(ST_AsText(l.coordinates::geometry)) as latitude,
-            ST_X(ST_AsText(l.coordinates::geometry)) as longitude,
-            aa.artists 
-        FROM 
-            event e 
-        INNER JOIN 
-            location l ON e.location_id = l.id 
-        LEFT JOIN 
-            artist_aggregation aa ON aa.event_id = e.id
+        SELECT * FROM event_details e 
         WHERE e.id = $1
             """, event_id
         )
