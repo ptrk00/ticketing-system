@@ -228,6 +228,11 @@ CREATE OR REPLACE VIEW event_details AS
     LEFT JOIN 
         artist_aggregation aa ON aa.event_id = e.id;
 
+-- rule to not delete ticket, mark it as revoked instead
+CREATE RULE revoke_instead_of_delete_ticket AS 
+    ON DELETE TO ticket
+        DO INSTEAD
+            UPDATE ticket SET revoked = TRUE WHERE id = OLD.id;
 
 -- load test data
 INSERT INTO "location" ("id", "name", "seats", "coordinates", "image_url", "description") VALUES

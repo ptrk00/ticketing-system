@@ -118,3 +118,8 @@ CREATE OR REPLACE VIEW event_details AS
         location.name as "location_name" 
     FROM "event" 
         INNER JOIN location ON event.location_id = location.id;
+
+CREATE RULE revoke_instead_of_delete_ticket AS 
+    ON DELETE TO ticket
+        DO INSTEAD
+            UPDATE ticket SET revoked = TRUE WHERE id = OLD.id;
