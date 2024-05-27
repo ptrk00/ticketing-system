@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Locations{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Locations</h1>
+    
+    <div class="row">
+        {% for location in locations %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ location.image_url }}" class="card-img-top" alt="{{ location.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body" onclick="window.location='/locations/{{ location.id }}';" style="cursor: pointer;">
+                    <h5 class="card-title">{{ location.name }}</h5>
+                    <p class="card-text">{{ location.description|truncate(40, killwords=False, end='...') }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if offset > 0 %}
+            <li class="page-item">
+                <a class="page-link" href="?offset={{ offset - limit }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo; Previous</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for p in range(0, total_locations, limit) %}
+            <li class="page-item {% if offset == p %}active{% endif %}">
+                <a class="page-link" href="?offset={{ p }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}">{{ p // limit + 1 }}</a>
+            </li>
+            {% endfor %}
+
+            {% if offset + limit < total_locations %}
+            <li class="page-item">
+                <a class="page-link" href="?offset={{ offset + limit }}&limit={{ limit }}{% if request.query_params.q %}&q={{ request.query_params.q }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">Next &raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+</div>
+{% endblock %}

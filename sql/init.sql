@@ -40,7 +40,9 @@ CREATE TABLE IF NOT EXISTS "location" (
     "id"          BIGINT NOT NULL PRIMARY KEY,
     "name"        VARCHAR(255) NOT NULL CHECK(LENGTH(TRIM(name)) >= 1),
     "seats"       BIGINT NOT NULL CHECK(seats > 0),
-    "coordinates" GEOGRAPHY(Point, 4326)
+    "coordinates" GEOGRAPHY(Point, 4326), 
+    "description" VARCHAR(255),
+    "image_url"   VARCHAR(255)
 );
 
 
@@ -181,7 +183,7 @@ CREATE OR REPLACE VIEW event_details AS
         event.id, 
         event.name,
         event.image_url as image_url,
-        description, 
+        event.description, 
         start_date, 
         end_date, 
         event.seats as "seats_left", 
@@ -191,12 +193,19 @@ CREATE OR REPLACE VIEW event_details AS
         INNER JOIN location ON event.location_id = location.id;
 
 -- load test data
-INSERT INTO "location" ("id", "name", "seats", "coordinates") VALUES
-(1, 'first place', 100, ST_GeogFromText('POINT(-70.935242 90.730610)')),
-(2, 'AGH University', 150, ST_GeogFromText('POINT(19.92330738650622 50.06458216297299)')),
-(3, 'third place', 200, ST_GeogFromText('POINT(-70.935242 10.730610)')),
-(4, 'fourth place', 250, ST_GeogFromText('POINT(-70.935242 20.730610)')),
-(5, 'Biblioteka UW', 300, ST_GeogFromText('POINT(21.02476929686503 52.24265017514509)'));
+-- INSERT INTO "location" ("id", "name", "seats", "coordinates", "image_url") VALUES
+-- (1, 'Stage', 100, ST_GeogFromText('POINT(-70.935242 90.730610)'), 'https://cdn.pixabay.com/photo/2016/10/03/18/52/stage-1712494_1280.jpg'),
+-- (2, 'AGH University', 150, ST_GeogFromText('POINT(19.92330738650622 50.06458216297299)'), 'https://www.uczelnie.pl/prezentacje/52/img/1_b.jpg'),
+-- (3, 'Mall', 200, ST_GeogFromText('POINT(-70.935242 10.730610)'), 'https://cdn.pixabay.com/photo/2016/05/26/05/12/shopping-mall-1416500_960_720.jpg'),
+-- (4, 'Random Museum', 250, ST_GeogFromText('POINT(-70.935242 20.730610)'), 'https://cdn.pixabay.com/photo/2017/04/05/01/10/natural-history-museum-2203648_1280.jpg'),
+-- (5, 'Biblioteka UW', 300, ST_GeogFromText('POINT(21.02476929686503 52.24265017514509)'), 'https://cdn.pixabay.com/photo/2020/02/06/20/01/university-library-4825366_1280.jpg');
+INSERT INTO "location" ("id", "name", "seats", "coordinates", "image_url", "description") VALUES
+(1, 'Stage', 100, ST_GeogFromText('POINT(-70.935242 90.730610)'), 'https://cdn.pixabay.com/photo/2016/10/03/18/52/stage-1712494_1280.jpg', 'The Stage is an iconic venue known for its outstanding performances and vibrant atmosphere. It has a seating capacity of 100.'),
+(2, 'AGH University', 150, ST_GeogFromText('POINT(19.92330738650622 50.06458216297299)'), 'https://www.uczelnie.pl/prezentacje/52/img/1_b.jpg', 'AGH University is a prestigious institution with modern facilities and a seating capacity of 150. It is renowned for its academic excellence.'),
+(3, 'Mall', 200, ST_GeogFromText('POINT(-70.935242 10.730610)'), 'https://cdn.pixabay.com/photo/2016/05/26/05/12/shopping-mall-1416500_960_720.jpg', 'The Mall is a popular shopping destination with a variety of stores and a seating capacity of 200. It offers a great shopping experience.'),
+(4, 'Random Museum', 250, ST_GeogFromText('POINT(-70.935242 20.730610)'), 'https://cdn.pixabay.com/photo/2017/04/05/01/10/natural-history-museum-2203648_1280.jpg', 'Random Museum showcases a diverse collection of exhibits and artifacts. With a seating capacity of 250, it provides an educational and cultural experience.'),
+(5, 'Biblioteka UW', 300, ST_GeogFromText('POINT(21.02476929686503 52.24265017514509)'), 'https://cdn.pixabay.com/photo/2020/02/06/20/01/university-library-4825366_1280.jpg', 'Biblioteka UW is the University of Warsaw library. It has a seating capacity of 300 and offers a vast collection of books and resources for students.');
+
 
 INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_id", "description", "genre", "image_url") VALUES
 (1, 'Music Concert', '2024-06-01', '2024-06-01', 100, 1, 'A grand music concert featuring famous bands.', 'art', 'https://cdn.pixabay.com/photo/2016/11/18/15/44/audience-1835431_960_720.jpg'),

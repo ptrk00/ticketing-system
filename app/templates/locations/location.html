@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Location Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center">{{ location.name }}</h1>
+            <img src="{{ location.image_url }}" class="img-fluid mb-4" alt="{{ location.name }}">
+            <p><strong>Location:</strong> {{ location.location_name }}</p>
+            <p><strong>Description:</strong> {{ location.description }}</p>
+            <p><strong>Seats Max:</strong> {{ location.max_seats }}</p>
+
+            <!-- Embedded Google Map -->
+            <div class="embed-responsive embed-responsive-16by9 mb-4">
+                <iframe
+                    class="embed-responsive-item"
+                    src="https://www.google.com/maps/embed/v1/place?key={{ api_key }}&q={{ location.latitude }},{{ location.longitude }}"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a class="btn btn-primary" href="/locations">Back to locations List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
