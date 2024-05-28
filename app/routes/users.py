@@ -20,11 +20,8 @@ async def list_users(request: Request,
         users = await connection.fetch(
             """
             SELECT 
-                id,
-                name,
-                email,
-                birthdate
-            FROM "user" 
+                *
+            FROM user_overview
             ORDER BY id LIMIT $1 OFFSET $2
             """, limit, offset
         )
@@ -48,12 +45,9 @@ async def get_user(request: Request,
     async with db.acquire() as connection:
         user = await connection.fetchrow(
             """
-            SELECT 
-                id, 
-                name,
-                email,
-                birthdate
-            FROM "user" 
+            SELECT
+                *
+            FROM user_details
             WHERE id = $1
             """, user_id
         )
