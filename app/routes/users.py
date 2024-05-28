@@ -57,7 +57,6 @@ async def get_user(request: Request,
             WHERE id = $1
             """, user_id
         )
-    # user = [dict(user) for user in users]
     if response_type == "json":
         return user
     else:
@@ -74,20 +73,9 @@ async def get_user_tickets(request: Request,
     async with db.acquire() as connection:
         result = await connection.fetch(
             """
-            SELECT 
-                "user".id as owner_id, 
-                "user".name,
-                "user".email,
-                ticket.id as ticket_id,
-                ticket.price,
-                ticket.currency,
-                event.name as event_name,
-                location.name as location_name
-            FROM "user" 
-            INNER JOIN "ticket" ON "user".id=ticket.owner_id
-            INNER JOIN "event" ON ticket.event_id=event.id
-            INNER JOIN "location" ON event.location_id=location.id
-            WHERE "user".id = $1
+            SELECT *
+            FROM ticket_overview
+            WHERE ticket_overview.owner_id = $1
             """, user_id
         )
     tickets = [dict(result) for result in result]
@@ -111,19 +99,9 @@ async def get_user_ticket(request: Request,
         ticket = await connection.fetchrow(
             """
             SELECT 
-                "user".id as owner_id, 
-                "user".name,
-                "user".email,
-                ticket.id as ticket_id,
-                ticket.price,
-                ticket.currency,
-                event.name as event_name,
-                location.name as location_name
-            FROM "user" 
-            INNER JOIN "ticket" ON "user".id=ticket.owner_id
-            INNER JOIN "event" ON ticket.event_id=event.id
-            INNER JOIN "location" ON event.location_id=location.id
-            WHERE "user".id = $1 AND ticket.id = $2
+                *
+            FROM ticket_details 
+            WHERE ticket_details.owner_id = $1 AND ticket_details.id = $2
             """, user_id, ticket_id
         )
     if response_type == "json":

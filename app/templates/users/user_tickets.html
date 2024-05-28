@@ -12,16 +12,14 @@
                     <tr>
                         <th>ID</th>
                         <th>Event</th>
-                        <th>Location</th>
                         <th>Price</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for ticket in tickets %}
-                    <tr onclick="window.location='/users/{{ user_id }}/tickets/{{ticket.ticket_id}}';" style="cursor: pointer;">
-                        <td>{{ ticket.ticket_id }}</td>
-                        <td>{{ ticket.event_name }}</td>
-                        <td>{{ ticket.location_name }}</td>
+                    <tr onclick="window.location='/users/{{ user_id }}/tickets/{{ticket.id}}';" style="cursor: pointer;">
+                        <td>{{ ticket.id }}</td>
+                        <td>{{ ticket.event }}</td>
                         <td>{{ ticket.price }} {{ ticket.currency }}</td>
                     </tr>
                     {% endfor %}

@@ -114,4 +114,34 @@ CREATE VIEW artist_details AS
     GROUP BY 
         artist.id, artist.name, artist.image_url;
 
+-- views for tickets
+CREATE OR REPLACE VIEW ticket_overview AS
+    SELECT 
+        ticket.id,
+        event.name as event,
+        "user".id as owner_id,
+        "user".name as owner_name,
+        "user".email as owner_email,
+        price,
+        currency
+    FROM "ticket"
+    INNER JOIN "user" ON ticket.owner_id="user".id
+    INNER JOIN "event" ON ticket.event_id=event.id; 
 
+CREATE OR REPLACE VIEW ticket_details AS
+    SELECT 
+        ticket.id,
+        event.name as event,
+        event.start_date as event_start_date,
+        "user".id as owner_id,
+        "user".name as owner_name,
+        "user".email as owner_email,
+        price,
+        currency,
+        bought_at,
+        revoked,
+        location.name as location_name
+    FROM "ticket"
+        INNER JOIN "user" ON ticket.owner_id="user".id
+        INNER JOIN "event" ON ticket.event_id=event.id 
+        INNER JOIN "location" ON event.location_id=location.id

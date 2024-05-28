@@ -19,15 +19,8 @@ async def list_tickets(request: Request,
         tickets = await connection.fetch(
             """
             SELECT 
-                ticket.id,
-                event.name as event,
-                "user".name as owner_name,
-                "user".email as owner_email,
-                price,
-                currency
-            FROM "ticket"
-            INNER JOIN "user" ON ticket.owner_id="user".id
-            INNER JOIN "event" ON ticket.event_id=event.id 
+                *
+            FROM ticket_overview
             ORDER BY id LIMIT $1 OFFSET $2
             """, limit, offset
         )
@@ -53,19 +46,9 @@ async def get_ticket(request: Request,
         ticket = await connection.fetchrow(
             """
             SELECT 
-                ticket.id,
-                event.name as event,
-                event.start_date as event_start_date,
-                "user".name as owner_name,
-                "user".email as owner_email,
-                price,
-                currency,
-                bought_at,
-                revoked
-            FROM "ticket"
-            INNER JOIN "user" ON ticket.owner_id="user".id
-            INNER JOIN "event" ON ticket.event_id=event.id 
-            WHERE ticket.id=$1
+                *
+            FROM ticket_details
+            WHERE ticket_details.id=$1
             """, ticket_id
         )
     if response_type == "json":
