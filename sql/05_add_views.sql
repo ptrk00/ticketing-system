@@ -90,3 +90,28 @@ CREATE VIEW location_details AS
             event.start_date ASC
         LIMIT 1
     ) closest_event ON true;
+
+-- views for querying actors
+CREATE VIEW artist_overview AS
+    SELECT 
+        artist.id, 
+        artist.name,
+        artist.image_url
+    FROM "artist"; 
+
+CREATE VIEW artist_details AS
+    SELECT 
+        artist.id AS artist_id,
+        artist.name,
+        artist.image_url,
+        json_agg(json_build_object('event_id', event.id, 'event_name', event.name)) AS events
+    FROM 
+        artist
+    INNER JOIN 
+        event_artist ON event_artist.artist_id = artist.id
+    INNER JOIN 
+        event ON event_artist.event_id = event.id
+    GROUP BY 
+        artist.id, artist.name, artist.image_url;
+
+

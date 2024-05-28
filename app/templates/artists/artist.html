@@ -17,9 +17,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for e in artist.events %}
-                    <tr onclick="window.location='/events/{{ e[0] }}';" style="cursor: pointer;">
-                        <td>{{ e[1] }}</td>
+                    {% for e in events %}
+                    <tr onclick="window.location='/events/{{ e.event_id }}';" style="cursor: pointer;">
+                        <td>{{ e.event_name }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

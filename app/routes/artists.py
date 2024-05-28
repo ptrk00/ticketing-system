@@ -4,6 +4,7 @@ import asyncpg
 from middlewares.middleware import get_accept_header
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+import json
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -19,10 +20,8 @@ async def list_artists(request: Request,
         artists = await connection.fetch(
             """
             SELECT 
-                artist.id, 
-                artist.name,
-                artist.image_url
-            FROM "artist" 
+                *
+            FROM artist_overview
             ORDER BY id LIMIT $1 OFFSET $2
             """, limit, offset
         )
@@ -47,15 +46,10 @@ async def get_artists(request: Request,
     async with db.acquire() as connection:
         artist = await connection.fetchrow(
             """
-            SELECT 
-                artist.name,
-                artist.image_url,
-                array_agg((event.id, event.name)) as events
-            FROM "artist" 
-                INNER JOIN event_artist ON event_artist.artist_id=artist.id
-                INNER JOIN event ON event_artist.event_id=event.id
-            WHERE artist.id = $1
-            GROUP BY artist.name, artist.image_url
+            SELECT
+                *
+            FROM artist_details
+            WHERE artist_details.artist_id = $1
             """, artist_id
         )
     if response_type == "json":
@@ -63,5 +57,5 @@ async def get_artists(request: Request,
     else:
         return templates.TemplateResponse(
     request=request, name="artists/artist.html",
-    context={"artist": artist}
+    context={"artist": artist, "events": json.loads(artist["events"])}
     )    
