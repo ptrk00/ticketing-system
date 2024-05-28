@@ -56,7 +56,7 @@ CREATE OR REPLACE VIEW location_overview AS
         coordinates
     FROM "location"; 
 
-CREATE VIEW location_details AS
+CREATE OR REPLACE VIEW location_details AS
     SELECT 
         location.id, 
         location.name,
@@ -92,14 +92,14 @@ CREATE VIEW location_details AS
     ) closest_event ON true;
 
 -- views for querying actors
-CREATE VIEW artist_overview AS
+CREATE OR REPLACE VIEW artist_overview AS
     SELECT 
         artist.id, 
         artist.name,
         artist.image_url
     FROM "artist"; 
 
-CREATE VIEW artist_details AS
+CREATE OR REPLACE VIEW artist_details AS
     SELECT 
         artist.id AS artist_id,
         artist.name,

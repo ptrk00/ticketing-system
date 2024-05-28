@@ -19,8 +19,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER check_event_seats BEFORE INSERT ON "event" FOR EACH ROW EXECUTE FUNCTION check_event_seats_less_than_location_seats();
+CREATE OR REPLACE TRIGGER check_event_seats BEFORE INSERT ON "event" FOR EACH ROW EXECUTE FUNCTION check_event_seats_less_than_location_seats();
 
 
 -- this trigger is invoked when ticket is inserted into database.
@@ -28,7 +27,7 @@ CREATE TRIGGER check_event_seats BEFORE INSERT ON "event" FOR EACH ROW EXECUTE F
 -- refreshes the "soon_sold_out_events" materialzied view
 CREATE OR REPLACE FUNCTION decrement_seats() RETURNS TRIGGER AS $$
 DECLARE
-    current_seats integer;
+    current_seats INTEGER;
 BEGIN
   UPDATE "event"
   SET seats = seats - 1
@@ -48,11 +47,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_decrement_seats AFTER INSERT ON "ticket" FOR EACH ROW EXECUTE FUNCTION decrement_seats();
+CREATE OR REPLACE TRIGGER trg_decrement_seats AFTER INSERT ON "ticket" FOR EACH ROW EXECUTE FUNCTION decrement_seats();
 
 
 -- ensure user that wishes to register is adult
+-- and populate registerd_at field
 CREATE OR REPLACE FUNCTION ensure_adult() RETURNS TRIGGER AS $$
 DECLARE
   user_age INTEGER;
@@ -68,5 +67,4 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE TRIGGER trg_ensure_seats BEFORE INSERT ON "user" FOR EACH ROW EXECUTE FUNCTION ensure_adult();
