@@ -40,6 +40,35 @@ CREATE OR REPLACE AGGREGATE popularity(seats bigint, location_id bigint) (
     SFUNC = popularity_fun
 );
 
+CREATE OR REPLACE FUNCTION popularity_fun(state numeric[], seats bigint, seats_capacity bigint) 
+RETURNS numeric[]
+AS $$
+BEGIN
+    state[1] := state[1] + ((seats_capacity::FLOAT8 - seats::numeric) / seats_capacity::FLOAT8);
+    state[2] := state[2] + 1;
+    RETURN state;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION popularity_final(state numeric[])
+RETURNS numeric AS $$
+BEGIN
+    IF state[2] = 0 THEN
+        RETURN 0; -- handle case with no rows processed
+    END IF;
+    RAISE NOTICE 'accumulated val: %, records processed: %', state[1], state[2];
+    RETURN state[1] / state[2];
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE AGGREGATE popularity(seats bigint, seats_capacity bigint) (
+    INITCOND = '{0,0}',
+    STYPE = numeric[],
+    SFUNC = popularity_fun,
+    FINALFUNC = popularity_final
+);
+
 select e.genre, popularity(e.seats, e.location_id) from event e group by e.genre;
 
 select e.seats as available_seats, l.seats as location_seats, e.genre from event e inner join location l on e.location_id=l.id;
@@ -123,3 +152,18 @@ CREATE RULE revoke_instead_of_delete_ticket AS
     ON DELETE TO ticket
         DO INSTEAD
             UPDATE ticket SET revoked = TRUE WHERE id = OLD.id;
+
+
+CREATE OR REPLACE FUNCTION ticket_prize(event_id bigint) RETURNS NUMERIC
+AS $$
+DECLARE
+    e_base_price bigint;
+    e_seats bigint;
+    e_seats_capacity bigint;
+BEGIN
+    SELECT base_price, seats, seats_capacity into e_base_price, e_seats, e_seats_capacity FROM event where id = event_id;
+    RETURN e_base_price + ((e_seats_capacity-e_seats)/e_seats_capacity::FLOAT8 * e_base_price);
+END;
+$$ LANGUAGE plpgsql;
+
+select e.name, e.genre, popularity(e.seats, e.seats_capacity) over (partition by e.genre) from event e;

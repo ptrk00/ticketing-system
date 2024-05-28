@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS "event" (
     "genre"                 VARCHAR(10) CHECK (genre IN ('art', 'sport', 'education', 'buisness')),
     "start_date"            DATE NOT NULL,
     "end_date"              DATE NOT NULL,
+    "seats_capacity"        BIGINT NOT NULL CHECK(seats_capacity > 0),             
     "seats"                 BIGINT NOT NULL CHECK(seats > 0), 
+    "base_price"            NUMERIC(12,2) CHECK(base_price > 0),
     "location_id"           BIGINT NOT NULL,
     "image_url"             VARCHAR(255)
 );

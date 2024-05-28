@@ -15,18 +15,16 @@
 tabele
 * zrobic cos z on delete cascade
 
-triggery jako checki
-* trigger co sprarwdza ze artysta nie moze byc na dwoch eventach w tym samym czasie (przy insert do event_artist)
-
 inne triggery (nie jako checki)
 * populowanie evailable seats na podstawie max_seats (przy insert  event)
 * jeszcze cos...
 * moze jakis "event trigger" (DDL)
 
 funckje
-* usuwanie eventu
-* liczenie ceny na podstawie event_id i owner_id
 * wlasna funkcja agregująca
+* liczenie ceny na podstawie event_id 
+
+* usuwanie eventu
 * zrobic funkcje na kupowanie biletu zamiast triggera
 * funckja na usuwanie biletu
 * funckja na usuwanie eventu

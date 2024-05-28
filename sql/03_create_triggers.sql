@@ -15,6 +15,8 @@ BEGIN
         RAISE NOTICE 'seats is currently %', NEW.seats;
         RAISE EXCEPTION 'not enough seats';
     END IF;
+
+    NEW.seats_capacity = NEW.seats;
     
     RETURN NEW;
 END;
@@ -88,6 +90,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER trg_check_event_conflict BEFORE INSERT OR UPDATE ON event FOR EACH ROW EXECUTE FUNCTION check_event_conflict(); 
 
 
+-- check if author does not have other event scheduled at that time
 CREATE OR REPLACE FUNCTION check_artist_conflict() RETURNS TRIGGER AS $$
 DECLARE
   in_event_start_date date;
