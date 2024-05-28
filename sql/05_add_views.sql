@@ -159,5 +159,6 @@ CREATE OR REPLACE VIEW user_details AS
         id, 
         name,
         email,
-        birthdate
+        birthdate,
+        registered_at
     FROM "user"; 

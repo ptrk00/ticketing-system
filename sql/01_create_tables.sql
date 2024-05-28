@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS "ticket" (
     "event_id"  BIGINT NOT NULL,
     "price"     NUMERIC(12,2) CHECK(price > 0),
     "currency"  VARCHAR(3) CHECK (currency IN ('PLN', 'USD', 'EUR', 'GBP')),
-    "bought_at" timestamptz NOT NULL,
+    "bought_at" TIMESTAMPTZ NOT NULL,
     "revoked"   BOOLEAN DEFAULT FALSE NOT NULL
 );
 
@@ -39,7 +39,8 @@ CREATE TABLE IF NOT EXISTS "user" (
     "id"        BIGINT NOT NULL PRIMARY KEY,
     "name"      VARCHAR(255) NOT NULL CHECK(LENGTH(TRIM(name)) >= 3),
     "email"     VARCHAR(255) NOT NULL UNIQUE CHECK(LENGTH(TRIM(email)) >= 3),
-    "birthdate" DATE NOT NULL
+    "birthdate" DATE NOT NULL,
+    "registered_at" TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "location" (

@@ -2,8 +2,6 @@
 * schema
 * USER permissions
 
-* views
-<!-- * materialized views -->
 * more triggers
 * more functions
 * procedury
@@ -44,8 +42,5 @@ query
 * cursor
 * upsert
 * window funciton
-
-widoki
-* jakies proste...
 
  -->

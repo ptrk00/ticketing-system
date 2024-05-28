@@ -16,12 +16,12 @@ INSERT INTO "event" ("id", "name", "start_date", "end_date", "seats", "location_
 (6, 'Book Fair Super Exclusive', '2024-10-05', '2024-10-07', 50, 3, 'A fair where you can find super exclusive books from various genres and authors.', 'education', 'https://cdn.pixabay.com/photo/2014/09/05/18/32/old-books-436498_1280.jpg', 'The Book Fair Super Exclusive is a premium literary event designed for true book aficionados. Over the course of three days, this exclusive fair offers access to rare and limited-edition books from various genres, along with the chance to meet distinguished authors and publishers. Attendees can participate in intimate book signings, private readings, and exclusive panel discussions. The event also features specialized workshops focusing on rare book collection, preservation, and the art of bookbinding. With its limited seating and exclusive content, the Book Fair Super Exclusive provides a unique and luxurious experience for those passionate about literature. Whether you are a collector or a dedicated reader, this event offers unparalleled access to the world of exclusive books.');
 
 
-INSERT INTO "user" (id, name, email, birthdate) VALUES
-(1, 'Alice Smith', 'alice.smith@example.com', '1990-01-15'),
-(2, 'Bob Johnson', 'bob.johnson@example.com', '1985-05-23'),
-(3, 'Charlie Brown', 'charlie.brown@example.com', '1992-08-12'),
-(4, 'Diana Prince', 'diana.prince@example.com', '1988-11-03'),
-(5, 'Evan Davis', 'evan.davis@example.com', '1995-04-28');
+INSERT INTO "user" (id, name, email, birthdate, registered_at) VALUES
+(1, 'Alice Smith', 'alice.smith@example.com', '1990-01-15', '2021-07-07 01:06+10'::timestamptz),
+(2, 'Bob Johnson', 'bob.johnson@example.com', '1985-05-23', '2021-02-02 01:06+10'::timestamptz),
+(3, 'Charlie Brown', 'charlie.brown@example.com', '1992-08-12','2022-02-02 01:06+10'::timestamptz),
+(4, 'Diana Prince', 'diana.prince@example.com', '1988-11-03', '2023-03-03 01:06+10'::timestamptz),
+(5, 'Evan Davis', 'evan.davis@example.com', '1995-04-28', '2024-07-01 01:06+10'::timestamptz);
 
 INSERT INTO "artist" (id, name, image_url) VALUES
 (1, 'Vincent van Gogh', 'https://cdn.pixabay.com/photo/2015/08/02/23/38/agnar-hoeskuldsson-872408_1280.jpg'),
