@@ -16,7 +16,6 @@ tabele
 * zrobic cos z on delete cascade
 
 triggery jako checki
-* trigger co sprawdza ze dwa eventy nie moga byc w tym samym czasie (przy insert event)
 * trigger co sprarwdza ze artysta nie moze byc na dwoch eventach w tym samym czasie (przy insert do event_artist)
 
 inne triggery (nie jako checki)
@@ -59,4 +58,5 @@ query
 * aggregacja (array_agg, json, count...)
 * lateral join
 * subquery
+* age, extract, type cast
   -->

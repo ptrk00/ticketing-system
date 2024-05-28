@@ -68,3 +68,47 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER trg_ensure_seats BEFORE INSERT ON "user" FOR EACH ROW EXECUTE FUNCTION ensure_adult();
+
+-- check if there is already event happening at the same location on the same date
+CREATE OR REPLACE FUNCTION check_event_conflict() RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM event
+    WHERE location_id = NEW.location_id
+    AND start_date <= NEW.end_date
+    AND end_date >= NEW.start_date
+    AND id <> NEW.id
+  ) THEN
+    RAISE EXCEPTION 'There is already an event scheduled at this location between specified time range';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE OR REPLACE TRIGGER trg_check_event_conflict BEFORE INSERT OR UPDATE ON event FOR EACH ROW EXECUTE FUNCTION check_event_conflict(); 
+
+
+CREATE OR REPLACE FUNCTION check_artist_conflict() RETURNS TRIGGER AS $$
+DECLARE
+  in_event_start_date date;
+  in_event_end_date date;
+BEGIN
+  SELECT start_date, end_date  INTO in_event_start_date, in_event_end_date FROM event WHERE event.id = NEW.event_id;
+
+  IF EXISTS (
+    SELECT 
+      1
+    FROM event_artist ea
+    INNER JOIN event e
+      ON ea.event_id=e.id 
+      WHERE ea.artist_id = NEW.artist_id
+      AND e.start_date <= in_event_end_date
+      AND e.end_date >= in_event_start_date
+      AND id <> NEW.event_id 
+  ) THEN
+      RAISE EXCEPTION 'Author has already scheduled event at that time';
+    END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE OR REPLACE TRIGGER trg_check_artist_conflict BEFORE INSERT OR UPDATE ON event_artist FOR EACH ROW EXECUTE FUNCTION check_artist_conflict();
