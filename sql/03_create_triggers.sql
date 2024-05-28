@@ -50,3 +50,23 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_decrement_seats AFTER INSERT ON "ticket" FOR EACH ROW EXECUTE FUNCTION decrement_seats();
+
+
+-- ensure user that wishes to register is adult
+CREATE OR REPLACE FUNCTION ensure_adult() RETURNS TRIGGER AS $$
+DECLARE
+  user_age INTEGER;
+BEGIN
+  SELECT EXTRACT(YEAR FROM AGE(CURRENT_DATE,NEW.birthdate)) :: int INTO user_age;
+
+  IF user_age < 18 THEN
+    RAISE EXCEPTION 'user (id = %) is not adult', NEW.id;
+  END IF;
+
+  NEW.registered_at := CURRENT_TIMESTAMP;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_ensure_seats BEFORE INSERT ON "user" FOR EACH ROW EXECUTE FUNCTION ensure_adult();

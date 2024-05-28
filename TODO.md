@@ -16,13 +16,13 @@ tabele
 * zrobic cos z on delete cascade
 
 triggery jako checki
-* trigger co sprawdza czy ten kto kupuje bilet ma 18 lat
-* trigger co sprawdza ze dwa eventy nie moga byc w tym samym czasie
-* trigger co sprarwdza ze artysta nie moze byc na dwoch eventach w tym samym czasie
-* moze jakis event trigger
+* trigger co sprawdza ze dwa eventy nie moga byc w tym samym czasie (przy insert event)
+* trigger co sprarwdza ze artysta nie moze byc na dwoch eventach w tym samym czasie (przy insert do event_artist)
 
 inne triggery (nie jako checki)
-*
+* populowanie evailable seats na podstawie max_seats (przy insert  event)
+* jeszcze cos...
+* moze jakis "event trigger" (DDL)
 
 funckje
 * usuwanie eventu
@@ -33,14 +33,30 @@ funckje
 * funckja na usuwanie eventu
 * funckja na usuwanie lokalizacji
 * artysta odwoluje event
+* cos z ustawieniem stability
 
 procedura
 * jedna z funkcji niech bedzie procedura
+* ogolnie cos z explicit tranzakcja
 
 query
 * fetch
 * cursor
 * upsert
 * window funciton
-
  -->
+
+<!-- JUZ UZYTE
+
+* inner join, left join
+* views
+* materialized views
+* triggery
+* rule
+* funkcje
+* paginacja (OFFSET I LIMIT)
+* CTE (common table expression)
+* aggregacja (array_agg, json, count...)
+* lateral join
+* subquery
+  -->
