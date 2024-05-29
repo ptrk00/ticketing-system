@@ -154,15 +154,20 @@ CREATE RULE revoke_instead_of_delete_ticket AS
             UPDATE ticket SET revoked = TRUE WHERE id = OLD.id;
 
 
-CREATE OR REPLACE FUNCTION ticket_prize(event_id bigint) RETURNS NUMERIC
+CREATE OR REPLACE FUNCTION ticket_prize(event_id bigint) 
+    RETURNS TABLE (
+        price numeric,
+        currency varchar(3)
+    )
 AS $$
 DECLARE
     e_base_price bigint;
     e_seats bigint;
     e_seats_capacity bigint;
+    currency varchar(3);
 BEGIN
-    SELECT base_price, seats, seats_capacity into e_base_price, e_seats, e_seats_capacity FROM event where id = event_id;
-    RETURN e_base_price + ((e_seats_capacity-e_seats)/e_seats_capacity::FLOAT8 * e_base_price);
+    SELECT base_price, base_price_currency, seats, seats_capacity into e_base_price, currency, e_seats, e_seats_capacity FROM event where id = event_id;
+    RETURN QUERY (e_base_price + ((e_seats_capacity-e_seats)/e_seats_capacity::FLOAT8 * e_base_price), base_price_currency);
 END;
 $$ LANGUAGE plpgsql;
 

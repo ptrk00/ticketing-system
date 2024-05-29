@@ -18,6 +18,47 @@ BEGIN
 END;
 $$LANGUAGE plpgsql;
 
+-- compute the price of the ticket for given event
+CREATE OR REPLACE FUNCTION ticket_prize(event_id bigint) 
+    RETURNS TABLE (
+        price numeric,
+        currency varchar(3)
+    )
+AS $$
+DECLARE
+    e_base_price bigint;
+    e_seats bigint;
+    e_seats_capacity bigint;
+    currency varchar(3);
+BEGIN
+    SELECT base_price, base_price_currency, seats, seats_capacity into e_base_price, currency, e_seats, e_seats_capacity FROM event where id = event_id;
+    RETURN QUERY (
+        SELECT 
+            e_base_price + ((e_seats_capacity-e_seats)/e_seats_capacity::NUMERIC * e_base_price) as price, 
+            currency AS currency);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION buy_ticket(user_id bigint, event_id bigint) RETURNS void 
+AS $$
+DECLARE
+    ticket_currency varchar(3);
+    ticket_cost numeric;
+    current_seats INTEGER;
+BEGIN
+ 
+ SELECT price, currency from ticket_prize(event_id) into ticket_cost, ticket_currency;
+ 
+ UPDATE "event"
+  SET seats = seats - 1
+  WHERE id = event_id AND seats > 0
+  RETURNING seats INTO current_seats;    
+
+  INSERT INTO ticket (owner_id, event_id, price, currency, bought_at) 
+    VALUES (user_id, event_id, ticket_cost, ticket_currency, current_timestamp);
+END;
+$$LANGUAGE plpgsql;
+
 -- custom aggregate function for computing popularity based on no of seats already taken
 -- function invoked for every record
 CREATE OR REPLACE FUNCTION popularity_fun(state numeric[], seats bigint, seats_capacity bigint) 

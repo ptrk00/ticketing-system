@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS "event" (
     "seats_capacity"        BIGINT NOT NULL CHECK(seats_capacity > 0),             
     "seats"                 BIGINT NOT NULL CHECK(seats > 0), 
     "base_price"            NUMERIC(12,2) CHECK(base_price > 0),
+    "base_price_currency"   VARCHAR(3) CHECK (base_price_currency IN ('PLN', 'USD', 'EUR', 'GBP')),
     "location_id"           BIGINT NOT NULL,
     "image_url"             VARCHAR(255)
 );
