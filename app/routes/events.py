@@ -63,13 +63,31 @@ async def get_best_selling_events(request: Request,
             LIMIT 3
             """
         )
+        events_popularity = await connection.fetch(
+            """
+            SELECT 
+                e.id, 
+                e.name, 
+                e.genre,
+                l.name as location_name, 
+                popularity(e.seats, e.seats_capacity) over(partition by e.id) as event_popularity, 
+                popularity(e.seats, e.seats_capacity) over(partition by e.genre) as genre_popularity, 
+                popularity(e.seats, e.seats_capacity) over(partition by e.location_id) as location_popularity 
+            FROM event e
+                INNER JOIN location l
+                    ON l.id = e.location_id
+            ORDER BY event_popularity DESC
+            LIMIT 10 
+            """
+        )
     events = [dict(event) for event in events]
+    events_popularity = [dict(event) for event in events_popularity]
     if response_type == "json":
         return events
     else:
         return templates.TemplateResponse(
             request=request, name="events/event_bestsellers.html",
-            context={"events": events}
+            context={"events": events, "event_popularity": events_popularity},
         )    
 
 @router.get("/search")
