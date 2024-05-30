@@ -49,12 +49,7 @@ BEGIN
  
  SELECT price, currency from ticket_prize(event_id) into ticket_cost, ticket_currency;
  
- UPDATE "event"
-  SET seats = seats - 1
-  WHERE id = event_id AND seats > 0
-  RETURNING seats INTO current_seats;    
-
-  INSERT INTO ticket (owner_id, event_id, price, currency, bought_at) 
+ INSERT INTO ticket (owner_id, event_id, price, currency, bought_at) 
     VALUES (user_id, event_id, ticket_cost, ticket_currency, current_timestamp);
 END;
 $$LANGUAGE plpgsql;

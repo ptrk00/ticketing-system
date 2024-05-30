@@ -38,15 +38,19 @@ INSERT INTO "event_artist" (event_id, artist_id) VALUES
 (1, 5),
 (2, 1);
 
-INSERT INTO "ticket" (id, owner_id, event_id, price, currency, bought_at) VALUES
-(1, 1, 5, 50.00, 'USD','2023-02-02 01:06+10'::timestamptz),
-(2, 2, 4, 75.00, 'EUR','2023-03-03 02:05+10'::timestamptz), 
-(3, 3, 3, 100.00, 'GBP','2022-07-12 03:04+10'::timestamptz),
-(4, 4, 2, 120.00, 'PLN','2023-08-10 04:03+10'::timestamptz), 
-(5, 5, 1, 60.00, 'USD','2023-09-11 05:02+10'::timestamptz),
-(6, 3, 1, 90.00, 'GBP','2024-01-01 06:01+10'::timestamptz),
-(7, 3, 6, 190.00, 'GBP', NOW());
+BEGIN;
+SELECT buy_ticket(1,5);
+SELECT buy_ticket(2,4);
+SELECT buy_ticket(3,3);
+SELECT buy_ticket(4,2);
+SELECT buy_ticket(5,1);
+SELECT buy_ticket(3,1);
+SELECT buy_ticket(3,6);
+COMMIT;
 
 -- adjust sequence due to manually inserted ids
 SELECT setval(pg_get_serial_sequence('"ticket"', 'id'), MAX(id)) FROM "ticket";
 SELECT setval(pg_get_serial_sequence('"event"', 'id'), MAX(id)) FROM "event";
+
+-- refresh materialized view
+REFRESH MATERIALIZED VIEW soon_sold_out_events;

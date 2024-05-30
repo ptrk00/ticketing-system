@@ -20,9 +20,6 @@ inne triggery (nie jako checki)
 * moze jakis "event trigger" (DDL)
 
 funckje
-* usutnac ten triger na decrement seats !!!
-
-* usuwanie eventu
 * funckja na usuwanie biletu
 * funckja na usuwanie eventu
 * funckja na usuwanie lokalizacji
