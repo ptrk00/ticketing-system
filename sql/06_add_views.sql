@@ -32,18 +32,22 @@ CREATE OR REPLACE VIEW event_details AS
         e.long_description,
         e.image_url,
         e.start_date,
-        e.end_date, 
+        e.end_date,
+        tp.price as prize,
+        tp.currency as currency, 
         e.seats as seats_left, 
         l.name as location_name, 
         ST_Y(ST_AsText(l.coordinates::geometry)) as latitude,
         ST_X(ST_AsText(l.coordinates::geometry)) as longitude,
         aa.artists 
     FROM 
-        event e 
+        event e
     INNER JOIN 
         location l ON e.location_id = l.id 
     LEFT JOIN 
-        artist_aggregation aa ON aa.event_id = e.id;
+        artist_aggregation aa ON aa.event_id = e.id
+    LEFT JOIN
+        LATERAL ticket_prize(e.id) tp ON true;
 
 -- views for querying location
 CREATE OR REPLACE VIEW location_overview AS 

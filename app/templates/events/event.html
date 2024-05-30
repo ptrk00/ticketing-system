@@ -18,6 +18,17 @@
             <p><strong>Artists:</strong> {{ event.artists | join(', ') }}</p>
             {% endif %}
 
+            <div class="text-center mt-4">
+                <form action="/tickets/checkout" method="post">
+                    <div class="form-group">
+                        <label for="user_id">Enter User ID:</label>
+                        <input type="text" class="form-control" id="user_id" name="user_id" required>
+                    </div>
+                    <input type="hidden" name="event_id" value="{{ event.id }}">
+                    <button type="submit" class="btn btn-success mt-3">Buy Ticket {{ event.prize}} {{ event.currency }}</button>
+                </form>
+            </div>
+            <br>
             <!-- Embedded Google Map -->
             <div class="embed-responsive embed-responsive-16by9 mb-4">
                 <iframe

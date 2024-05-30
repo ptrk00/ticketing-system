@@ -16,16 +16,13 @@ tabele
 * zrobic cos z on delete cascade
 
 inne triggery (nie jako checki)
-* populowanie evailable seats na podstawie max_seats (przy insert  event)
 * jeszcze cos...
 * moze jakis "event trigger" (DDL)
 
 funckje
-* wlasna funkcja agregująca
-* liczenie ceny na podstawie event_id 
+* usutnac ten triger na decrement seats !!!
 
 * usuwanie eventu
-* zrobic funkcje na kupowanie biletu zamiast triggera
 * funckja na usuwanie biletu
 * funckja na usuwanie eventu
 * funckja na usuwanie lokalizacji
@@ -57,4 +54,7 @@ query
 * lateral join
 * subquery
 * age, extract, type cast
+* window function
+* postgis
+* textsearch
   -->

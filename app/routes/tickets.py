@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request, Form
+from typing import Annotated
 from database.db import get_db
 import asyncpg
 from middlewares.middleware import get_accept_header
@@ -60,18 +61,19 @@ async def get_ticket(request: Request,
     )    
 
 @router.post("/checkout")
-async def buy_ticket(user_id: int, 
-                     event_id: int,
-                     price: float,
-                     currency: str = Query("PLN", len=3),
-                    db: asyncpg.Pool = Depends(get_db)):
+async def buy_ticket(request: Request,
+                        user_id : Annotated[int, Form()], 
+                        event_id : Annotated[int, Form()],
+                        db: asyncpg.Pool = Depends(get_db)):
     async with db.acquire() as connection:
-        tickets = await connection.execute(
+        await connection.execute(
             """
-            INSERT INTO ticket 
-                (owner_id, event_id, price, currency)
-            VALUES ($1, $2, $3, $4)
-            """, user_id, event_id, price, currency
+            SELECT 
+                buy_ticket($1, $2)
+
+            """, user_id, event_id
         )
-        print(tickets)
-        return
+    return templates.TemplateResponse(
+        request=request, name="tickets/ticket_bought.html",
+        context={"user_id": user_id, "event_id": event_id}
+    )

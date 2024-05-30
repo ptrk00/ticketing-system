@@ -34,7 +34,7 @@ BEGIN
     SELECT base_price, base_price_currency, seats, seats_capacity into e_base_price, currency, e_seats, e_seats_capacity FROM event where id = event_id;
     RETURN QUERY (
         SELECT 
-            e_base_price + ((e_seats_capacity-e_seats)/e_seats_capacity::NUMERIC * e_base_price) as price, 
+            ROUND(e_base_price + ((e_seats_capacity-e_seats)/e_seats_capacity::NUMERIC * e_base_price), 2) as price, 
             currency AS currency);
 END;
 $$ LANGUAGE plpgsql;

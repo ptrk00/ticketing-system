@@ -1,0 +1,11 @@
+
+{% extends "base.html" %}
+
+{% block title %}Ticket Details{% endblock %}
+
+{% block content %}
+<p> {{ user_id }} has bought ticket for event {{ event_id }}</p>
+<div class="d-flex justify-content-between">
+    <a class="btn btn-primary" href="/events/{{ event_id }}">Back to event details</a>
+</div>
+{% endblock %}
