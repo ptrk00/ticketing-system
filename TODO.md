@@ -19,10 +19,6 @@ inne triggery (nie jako checki)
 * jeszcze cos...
 * moze jakis "event trigger" (DDL)
 
-wystawic na frontend
-* dodawanie eventu
-* wszystko to co ponizej
-
 funckje
 * funckja na usuwanie biletu (revoked na true)
 * funckja na usuwanie eventu (revoke kazdego biletu, usuwanie wpisu w event-artist)
