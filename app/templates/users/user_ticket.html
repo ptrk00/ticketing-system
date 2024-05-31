@@ -24,6 +24,14 @@
                     <th>Price</th>
                     <td>{{ ticket.price }} {{ ticket.currency }}</td>
                 </tr>
+                <tr>
+                    <th>Bought At</th>
+                    <td>{{ ticket.bought_at }}</td>
+                </tr>
+                <tr>
+                    <th>Revoked</th>
+                    <td>{{ ticket.revoked }}</td>
+                </tr>
             </table>
             <div class="d-flex justify-content-between">
                 <a class="btn btn-primary" href="/users/{{ user_id }}/tickets">Back to Tickets List</a>
