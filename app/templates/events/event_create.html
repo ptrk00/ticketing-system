@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Event{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Create New Event</h1>
+    <form id="eventForm" method="post">
+        <div class="form-group">
+            <label for="name">Event Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" class="form-control" id="description" name="description" required>
+        </div>
+        <div class="form-group">
+            <label for="genre">Genre</label>
+            <input type="text" class="form-control" id="genre" name="genre" required>
+        </div>
+        <div class="form-group">
+            <label for="start_date">Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date">End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" required>
+        </div>
+        <div class="form-group">
+            <label for="seats">Seats</label>
+            <input type="number" class="form-control" id="seats" name="seats" required>
+        </div>
+        <div class="form-group">
+            <label for="location_id">Location</label>
+            <select class="form-control" id="location_id" name="location_id" required>
+                {% for location in locations %}
+                <option value="{{ location.id }}">{{ location.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="artists_ids">Artists</label>
+            <select multiple class="form-control" id="artists_ids" name="artists_ids" required>
+                {% for actor in actors %}
+                <option value="{{ actor.id }}">{{ actor.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="long_description">Long Description</label>
+            <textarea class="form-control" id="long_description" name="long_description" rows="5" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="base_prize">Base Prize</label>
+            <input type="number" class="form-control" id="base_prize" name="base_prize" required>
+        </div>
+        <div class="form-group">
+            <label for="base_prize_currency">Base Prize Currency</label>
+            <select class="form-control" id="base_prize_currency" name="base_prize_currency" required>
+                <option value="USD">USD</option>
+                <option value="PLN">PLN</option>
+                <option value="GBP">GBP</option>
+                <option value="EUR">EUR</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="image_url">Image URL</label>
+            <input type="url" class="form-control" id="image_url" name="image_url" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Event</button>
+    </form>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Event Created</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    The event has been created successfully!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    document.getElementById('eventForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = {
+            name: formData.get('name'),
+            description: formData.get('description'),
+            genre: formData.get('genre'),
+            start_date: formData.get('start_date'),
+            end_date: formData.get('end_date'),
+            seats: formData.get('seats'),
+            location_id: formData.get('location_id'),
+            artists_ids: formData.getAll('artists_ids'),
+            long_description: formData.get('long_description'),
+            base_prize: formData.get('base_prize'),
+            base_prize_currency: formData.get('base_prize_currency'),
+            image_url: formData.get('image_url')
+        };
+
+        const response = await fetch('/events/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            $('#successModal').modal('show');
+            form.reset();
+        } else {
+            // Handle error case
+            alert('Failed to create event');
+        }
+    });
+</script>
+{% endblock %}

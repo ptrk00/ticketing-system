@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Query, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, Query, Request, Form
+from fastapi.responses import HTMLResponse, JSONResponse
 from database.db import get_db
 import asyncpg
 from pydantic import BaseModel
@@ -7,6 +7,7 @@ from middlewares.middleware import get_accept_header
 from fastapi.templating import Jinja2Templates
 import datetime
 import os
+from typing import Annotated
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -236,6 +237,38 @@ async def get_events_artist( event_id: int, db: asyncpg.Pool = Depends(get_db)):
         return [dict(event) for event in events]
 
 
+@router.get("/create")
+async def create_event_page(request: Request,
+                            db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        actors = await connection.fetch(
+            """
+                SELECT 
+                    id, 
+                    name
+                FROM
+                    artist
+            """
+        )
+
+        locations = await connection.fetch(
+            """
+                SELECT  
+                    id,
+                    name
+                FROM
+                    location
+            """
+        )
+    actors = [dict(actor) for actor in actors]
+    locations = [dict(location) for location in locations]
+    return templates.TemplateResponse(
+        request, name="events/event_create.html",
+        context={"actors": actors,
+        "locations": locations}
+    )
+
+
 @router.get("/{event_id}")
 async def get_events(request: Request,
                     event_id: int, 
@@ -261,32 +294,29 @@ async def get_events(request: Request,
 class CreateEventPayload(BaseModel):
     name: str
     description: str
+    genre: str
     start_date: datetime.date
     end_date: datetime.date
     seats: int
     location_id: int
-    actors_ids: list[int]
+    long_description: str
+    base_prize: int
+    base_prize_currency: str
+    image_url: str
+    artists_ids: list[int]
 
-@router.post("/event")
-async def create_events(payload: CreateEventPayload, db: asyncpg.Pool = Depends(get_db)):
+@router.post("/create")
+async def create_events(p: CreateEventPayload,
+                        db: asyncpg.Pool = Depends(get_db)):
+    placeholders = ', '.join([f'${i}' for i in range(1,12 + len (p.artists_ids))])
+    q = f"""
+            SELECT add_event({placeholders})
+        """
+    # print(q, p.name, p.description, p.start_date, p.end_date, p.seats, p.genre, p.location_id, *p.artists_ids)
     async with db.acquire() as connection:
-        async with connection.transaction():
-            event_id = await connection.fetchval(
-            """
-                INSERT INTO "event" (name, description, start_date, end_date, seats, location_id)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id
-            """,
-            payload.name, payload.description, payload.start_date, payload.end_date, payload.seats, payload.location_id
-            )
-
-            for actor_id in payload.actors_ids:
-                await connection.execute(
-                """
-                    INSERT INTO "event_artist" (event_id, artist_id)
-                    VALUES ($1, $2)
-                """, event_id, actor_id
-        
-            )
-
-        return
+        event_id = await connection.fetch(
+            q, p.name, p.description, p.genre, p.start_date, p.end_date, p.seats, p.location_id, 
+            p.long_description, p.base_prize, p.base_prize_currency, p.image_url, *p.artists_ids
+        )
+    headers = {"Location": f"/events/{event_id}"}
+    return JSONResponse(content={}, status_code=201, headers=headers)

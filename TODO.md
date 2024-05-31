@@ -19,11 +19,15 @@ inne triggery (nie jako checki)
 * jeszcze cos...
 * moze jakis "event trigger" (DDL)
 
+wystawic na frontend
+* dodawanie eventu
+* wszystko to co ponizej
+
 funckje
-* funckja na usuwanie biletu
-* funckja na usuwanie eventu
-* funckja na usuwanie lokalizacji
-* artysta odwoluje event
+* funckja na usuwanie biletu (revoked na true)
+* funckja na usuwanie eventu (revoke kazdego biletu, usuwanie wpisu w event-artist)
+* funckja na usuwanie lokalizacji (usuniecie kazdego eventu)
+* artysta odwoluje event (usun wpis z event artist i jezeli to jedyny artysta na tym evencie to odwolaj event)
 * cos z ustawieniem stability
 
 procedura

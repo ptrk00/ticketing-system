@@ -172,3 +172,5 @@ END;
 $$ LANGUAGE plpgsql;
 
 select e.name, e.genre, popularity(e.seats, e.seats_capacity) over (partition by e.genre) from event e;
+
+

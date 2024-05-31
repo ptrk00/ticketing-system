@@ -1,20 +1,23 @@
 -- This function adds event, it takes all args that are needed to crate event
 -- record itself and also arbitrary len of artists ids. 
 CREATE OR REPLACE FUNCTION add_event(aname varchar(255), adescription varchar(255), agenre varchar(10), 
-    astart_date date, aend_date date, aseats bigint, alocation_id bigint, VARIADIC aartists BIGINT[]) RETURNS void
+    astart_date date, aend_date date, aseats bigint, alocation_id bigint, 
+    along_description varchar(2048), abase_prize numeric(12,2), abase_prize_currency varchar(3), 
+    aimage_url varchar(255), VARIADIC aartists BIGINT[]) RETURNS BIGINT
 AS $$
 DECLARE
     event_id bigint;
     aartist bigint;
 BEGIN
-    INSERT INTO event(name, description, genre, start_date, end_date, seats, location_id) VALUES (
-        aname, adescription, agenre, astart_date, aend_date, aseats, alocation_id
+    INSERT INTO event(name, description, genre, start_date, end_date, seats, location_id, long_description, base_price, base_price_currency, image_url) VALUES (
+        aname, adescription, agenre, astart_date, aend_date, aseats, alocation_id, along_description, abase_prize, abase_prize_currency, aimage_url
     ) RETURNING id into event_id;
 
     FOREACH aartist IN ARRAY aartists
     LOOP
         INSERT INTO event_artist(event_id,artist_id) VALUES(event_id, aartist);
     END LOOP;
+    RETURN event_id;
 END;
 $$LANGUAGE plpgsql;
 
