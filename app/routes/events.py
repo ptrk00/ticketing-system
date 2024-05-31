@@ -239,6 +239,38 @@ async def get_events_artist( event_id: int, db: asyncpg.Pool = Depends(get_db)):
         )
         return [dict(event) for event in events]
 
+@router.get("/delete")
+async def delete_event_page(request: Request,
+                            db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        events  = await connection.fetch(
+            """
+                SELECT 
+                    id,
+                    name
+                FROM
+                    event
+            """
+        )
+
+        events = [dict(event) for event in events]
+        return templates.TemplateResponse(
+            request=request, name="events/event_delete.html",
+            context={"events": events}
+        )
+
+@router.delete("/{event_id}")
+async def delete_event(request: Request,
+                        event_id: int,
+                        db: asyncpg.Pool = Depends(get_db)):
+    print(event_id)
+    async with db.acquire() as connection:
+        await connection.fetch(
+            """
+                SELECT
+                    revoke_event($1)
+            """, event_id)
+
 
 @router.get("/create")
 async def create_event_page(request: Request,

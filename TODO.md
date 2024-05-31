@@ -54,4 +54,6 @@ query
 * window function
 * postgis
 * textsearch
+* coalesce 
+* filter
   -->

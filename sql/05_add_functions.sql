@@ -22,7 +22,7 @@ END;
 $$LANGUAGE plpgsql;
 
 -- revoke event
-CREATE OR REPLACE FUNCTION revoked_event(aevent_id bigint) RETURNS VOID
+CREATE OR REPLACE FUNCTION revoke_event(aevent_id bigint) RETURNS VOID
 AS $$
 DECLARE
 current_seats INTEGER;
