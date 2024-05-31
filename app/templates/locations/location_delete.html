@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Location{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Delete location</h1>
+    <form id="eventForm" method="post">
+        <div class="form-group">
+            <label for="location_id">Events</label>
+            <select class="form-control" id="location_id" name="location_id" required>
+                {% for location in locations %}
+                <option value="{{ location.id }}">{{ location.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Delete Location</button>
+    </form>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Event Deleted</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    The location has been deleted successfully!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    document.getElementById('eventForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const locationId = form.location_id.value;
+
+        const response = await fetch(`/locations/${locationId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            $('#successModal').modal('show');
+            form.reset();
+        } else {
+            // Handle error case
+            alert('Failed to delete location');
+        }
+    });
+</script>
+{% endblock %}

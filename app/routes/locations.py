@@ -36,6 +36,36 @@ async def list_locations(request: Request,
     "offset": offset, "limit": limit}
     )    
 
+@router.get("/delete")
+async def delete_location_page(request: Request,
+                            db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        locations  = await connection.fetch(
+            """
+                SELECT 
+                    id,
+                    name
+                FROM
+                   location 
+            """
+        )
+
+        locations = [dict(location) for location in locations]
+        return templates.TemplateResponse(
+            request=request, name="locations/location_delete.html",
+            context={"locations": locations}
+        )
+
+@router.delete("/{location_id}")
+async def delete_location(request: Request,
+                        location_id: int,
+                        db: asyncpg.Pool = Depends(get_db)):
+    async with db.acquire() as connection:
+        await connection.fetch(
+            """
+                SELECT
+                    delete_location($1)
+            """, location_id)
 
 @router.get("/{location_id}")
 async def get_events(request: Request,
