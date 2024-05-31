@@ -44,6 +44,15 @@ BEGIN
 END;
 $$LANGUAGE plpgsql;
 
+-- delete location
+CREATE OR REPLACE FUNCTION delete_location(alocation_id bigint) RETURNS VOID
+AS $$
+BEGIN
+    PERFORM revoke_event(e.id) FROM event e WHERE e.location_id=alocation_id;
+    DELETE FROM location WHERE id=alocation_id;
+END;
+$$LANGUAGE plpgsql;
+
 -- compute the price of the ticket for given event
 CREATE OR REPLACE FUNCTION ticket_prize(event_id bigint) 
     RETURNS TABLE (

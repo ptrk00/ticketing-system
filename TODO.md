@@ -20,8 +20,6 @@ inne triggery (nie jako checki)
 * moze jakis "event trigger" (DDL)
 
 funckje
-* funckja na usuwanie biletu (revoked na true)
-* funckja na usuwanie eventu (revoke kazdego biletu, usuwanie wpisu w event-artist)
 * funckja na usuwanie lokalizacji (usuniecie kazdego eventu)
 * artysta odwoluje event (usun wpis z event artist i jezeli to jedyny artysta na tym evencie to odwolaj event)
 * cos z ustawieniem stability

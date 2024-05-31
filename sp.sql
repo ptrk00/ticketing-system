@@ -195,3 +195,11 @@ BEGIN
     END IF;
 END;
 $$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION delete_location(alocation_id bigint) RETURNS VOID
+AS $$
+BEGIN
+    PERFORM revoke_event(e.id) FROM event e WHERE e.location_id=alocation_id;
+    DELETE FROM location WHERE id=alocation_id;
+END;
+$$LANGUAGE plpgsql;

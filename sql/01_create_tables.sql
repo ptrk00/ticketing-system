@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS "event" (
     "seats"                 BIGINT NOT NULL CHECK(seats > 0), 
     "base_price"            NUMERIC(12,2) CHECK(base_price > 0),
     "base_price_currency"   VARCHAR(3) CHECK (base_price_currency IN ('PLN', 'USD', 'EUR', 'GBP')),
-    "location_id"           BIGINT NOT NULL,
+    "location_id"           BIGINT,
     "image_url"             VARCHAR(255),
     "revoked"               BOOLEAN DEFAULT FALSE NOT NULL
 );
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS "location" (
 
 -- foregin keys
 ALTER TABLE
-    "event" ADD CONSTRAINT "event_location_id_foreign" FOREIGN KEY("location_id") REFERENCES "location"("id");
+    "event" ADD CONSTRAINT "event_location_id_foreign" FOREIGN KEY("location_id") REFERENCES "location"("id") ON DELETE SET NULL;
 ALTER TABLE
     "ticket" ADD CONSTRAINT "ticket_owner_id_foreign" FOREIGN KEY("owner_id") REFERENCES "user"("id");
 ALTER TABLE

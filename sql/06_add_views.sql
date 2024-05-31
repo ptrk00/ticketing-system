@@ -155,7 +155,7 @@ CREATE OR REPLACE VIEW ticket_details AS
     FROM "ticket"
         INNER JOIN "user" ON ticket.owner_id="user".id
         INNER JOIN "event" ON ticket.event_id=event.id 
-        INNER JOIN "location" ON event.location_id=location.id;
+        LEFT JOIN "location" ON event.location_id=location.id;
 
 -- views for user
 CREATE OR REPLACE VIEW user_overview AS
