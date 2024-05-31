@@ -11,7 +11,8 @@ CREATE OR REPLACE VIEW event_overview AS
         location.name as "location_name",
         event.ts as ts
     FROM "event" 
-        INNER JOIN location ON event.location_id = location.id;
+        INNER JOIN location ON event.location_id = location.id
+    WHERE event.revoked = FALSE;
 
 CREATE OR REPLACE VIEW event_details AS
     WITH artist_aggregation AS (
@@ -47,7 +48,8 @@ CREATE OR REPLACE VIEW event_details AS
     LEFT JOIN 
         artist_aggregation aa ON aa.event_id = e.id
     LEFT JOIN
-        LATERAL ticket_prize(e.id) tp ON true;
+        LATERAL ticket_prize(e.id) tp ON true
+    WHERE e.revoked = FALSE;
 
 -- views for querying location
 CREATE OR REPLACE VIEW location_overview AS 
@@ -90,6 +92,7 @@ CREATE OR REPLACE VIEW location_details AS
         WHERE 
             event.location_id = location.id
             AND current_date < event.start_date
+            AND event.revoked = FALSE
         ORDER BY 
             event.start_date ASC
         LIMIT 1
@@ -108,13 +111,17 @@ CREATE OR REPLACE VIEW artist_details AS
         artist.id AS artist_id,
         artist.name,
         artist.image_url,
-        json_agg(json_build_object('event_id', event.id, 'event_name', event.name)) AS events
+        COALESCE(
+            json_agg(
+                json_build_object('event_id', event.id, 'event_name', event.name)
+            ) FILTER (WHERE event.id IS NOT NULL), '[]'::json
+         ) AS events
     FROM 
         artist
-    INNER JOIN 
+    LEFT JOIN 
         event_artist ON event_artist.artist_id = artist.id
-    INNER JOIN 
-        event ON event_artist.event_id = event.id
+    LEFT JOIN 
+        event ON event_artist.event_id = event.id AND event.revoked = FALSE
     GROUP BY 
         artist.id, artist.name, artist.image_url;
 
@@ -143,7 +150,7 @@ CREATE OR REPLACE VIEW ticket_details AS
         price,
         currency,
         bought_at,
-        revoked,
+        ticket.revoked,
         location.name as location_name
     FROM "ticket"
         INNER JOIN "user" ON ticket.owner_id="user".id

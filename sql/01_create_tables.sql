@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS "event" (
     "base_price"            NUMERIC(12,2) CHECK(base_price > 0),
     "base_price_currency"   VARCHAR(3) CHECK (base_price_currency IN ('PLN', 'USD', 'EUR', 'GBP')),
     "location_id"           BIGINT NOT NULL,
-    "image_url"             VARCHAR(255)
+    "image_url"             VARCHAR(255),
+    "revoked"               BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "user" (

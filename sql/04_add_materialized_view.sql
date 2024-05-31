@@ -28,6 +28,7 @@ LEFT JOIN
     artist_aggregation aa ON aa.event_id = e.id
     -- almost sold out when < 150
     WHERE e.seats < 150
+    AND e.revoked = FALSE
     ORDER BY e.seats ASC
     LIMIT 3
 WITH NO DATA;

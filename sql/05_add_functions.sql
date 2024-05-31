@@ -21,6 +21,29 @@ BEGIN
 END;
 $$LANGUAGE plpgsql;
 
+-- revoke event
+CREATE OR REPLACE FUNCTION revoked_event(aevent_id bigint) RETURNS VOID
+AS $$
+DECLARE
+current_seats INTEGER;
+BEGIN
+    -- revoke all tickets for that event 
+    UPDATE ticket SET revoked=TRUE where ticket.event_id = aevent_id;
+
+    -- remove from event_artists 
+    DELETE FROM event_artist WHERE event_artist.event_id = aevent_id;
+
+    -- finally revoke event
+    UPDATE event SET revoked=TRUE WHERE id=aevent_id RETURNING seats INTO current_seats;
+
+    -- check if we need to refresh materialized view 
+    IF current_seats < 150 THEN
+        RAISE NOTICE 'refreshing materialized view';
+        REFRESH MATERIALIZED VIEW soon_sold_out_events;
+    END IF;
+END;
+$$LANGUAGE plpgsql;
+
 -- compute the price of the ticket for given event
 CREATE OR REPLACE FUNCTION ticket_prize(event_id bigint) 
     RETURNS TABLE (
@@ -42,6 +65,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- buy ticket
 CREATE OR REPLACE FUNCTION buy_ticket(user_id bigint, event_id bigint) RETURNS void 
 AS $$
 DECLARE

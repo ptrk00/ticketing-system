@@ -60,6 +60,7 @@ async def get_best_selling_events(request: Request,
             FROM "ticket" 
                 INNER JOIN event ON ticket.event_id = event.id 
                 INNER JOIN location ON event.location_id = location.id
+            WHERE event.revoked = FALSE
             ORDER BY tickets_sold DESC
             LIMIT 3
             """
@@ -77,6 +78,7 @@ async def get_best_selling_events(request: Request,
             FROM event e
                 INNER JOIN location l
                     ON l.id = e.location_id
+            WHERE e.revoked = FALSE
             ORDER BY event_popularity DESC
             LIMIT 10 
             """
@@ -172,7 +174,8 @@ async def search_events_in_range(range: int = Query(gt=1),
                 ST_Distance(coordinates, ST_GeogFromText($1)) AS distance
              FROM "event"
                 INNER JOIN location l on event.location_id=l.id 
-                WHERE ST_DWithin(l.coordinates, ST_GeogFromText($2), $3)
+                WHERE ST_DWithin(l.coordinates, ST_GeogFromText($2), $3) AND
+                WHERE event.revoked = FALSE
                 ORDER BY distance ASC;
             """, f'POINT({long} {lat})', f'POINT({long} {lat})', range * 1000
         )
