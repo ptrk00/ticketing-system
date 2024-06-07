@@ -20,7 +20,6 @@ inne triggery (nie jako checki)
 * moze jakis "event trigger" (DDL)
 
 funckje
-* funckja na usuwanie lokalizacji (usuniecie kazdego eventu)
 * artysta odwoluje event (usun wpis z event artist i jezeli to jedyny artysta na tym evencie to odwolaj event)
 * cos z ustawieniem stability
 
