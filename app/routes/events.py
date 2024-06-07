@@ -175,7 +175,7 @@ async def search_events_in_range(range: int = Query(gt=1),
              FROM "event"
                 INNER JOIN location l on event.location_id=l.id 
                 WHERE ST_DWithin(l.coordinates, ST_GeogFromText($2), $3) AND
-                WHERE event.revoked = FALSE
+                event.revoked = FALSE
                 ORDER BY distance ASC;
             """, f'POINT({long} {lat})', f'POINT({long} {lat})', range * 1000
         )
