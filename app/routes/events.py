@@ -28,7 +28,7 @@ async def list_events(request: Request,
             ORDER BY id LIMIT $1 OFFSET $2
             """, limit, offset
         )
-        total_events = await connection.fetchval("SELECT COUNT(*) FROM event")
+        total_events = await connection.fetchval("SELECT COUNT(*) FROM event WHERE event.revoked = FALSE")
         events = [dict(event) for event in events]
         if response_type == "json":
             return events
