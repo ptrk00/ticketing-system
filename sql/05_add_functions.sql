@@ -109,7 +109,7 @@ CREATE OR REPLACE FUNCTION popularity_final(state numeric[])
 RETURNS numeric AS $$
 BEGIN
     IF state[2] = 0 THEN
-        RETURN 0; -- handle case with no rows processed
+        RETURN 0; -- no rows processed
     END IF;
     RAISE NOTICE 'accumulated val: %, records processed: %', state[1], state[2];
     RETURN state[1] / state[2];
